@@ -6,19 +6,20 @@
   <title>My Mac Desktop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       width: 100%; height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'PingFang SC', system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', 'PingFang SC', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
       user-select: none;
+      background: #000;
     }
 
-    /* ==================== PHASE 1: BOOT ==================== */
+    /* ========== BOOT ========== */
     #boot-screen {
       position: fixed; inset: 0; z-index: 9999;
       background: #000;
@@ -27,22 +28,12 @@
       transition: opacity 0.8s ease;
     }
     #boot-screen.fade-out { opacity: 0; pointer-events: none; }
-
     .apple-logo-boot { width: 56px; height: 56px; margin-bottom: 48px; }
     .apple-logo-boot svg { fill: #fff; width: 100%; height: 100%; }
+    .progress-track { width: 180px; height: 5px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
+    .progress-fill { width: 0%; height: 100%; background: #fff; border-radius: 3px; transition: width 0.3s ease; }
 
-    .progress-track {
-      width: 180px; height: 5px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 3px; overflow: hidden;
-    }
-    .progress-fill {
-      width: 0%; height: 100%;
-      background: #fff; border-radius: 3px;
-      transition: width 0.3s ease;
-    }
-
-    /* ==================== PHASE 2: LOCK SCREEN ==================== */
+    /* ========== LOCK SCREEN ========== */
     #lock-screen {
       position: fixed; inset: 0; z-index: 9998;
       display: none; flex-direction: column;
@@ -52,448 +43,439 @@
     }
     #lock-screen.visible { display: flex; }
     #lock-screen.fade-out { opacity: 0; transform: scale(1.05); pointer-events: none; }
-
-    .sonoma-wallpaper {
+    .lock-wallpaper {
       position: absolute; inset: 0;
       background: url('wallpaper.jpg') center/cover no-repeat;
       background-color: #0a0a0a;
     }
-
+    .lock-wallpaper::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.15);
+      backdrop-filter: blur(0.5px);
+    }
     .lock-time {
       position: relative; z-index: 2;
-      font-size: 96px; font-weight: 700; color: #fff;
+      font-size: clamp(64px, 10vw, 104px); font-weight: 700; color: #fff;
       letter-spacing: -2px;
-      text-shadow: 0 2px 40px rgba(0,0,0,0.3);
+      text-shadow: 0 2px 40px rgba(0,0,0,0.4);
       line-height: 1;
     }
     .lock-date {
       position: relative; z-index: 2;
-      font-size: 22px; font-weight: 400;
-      color: rgba(255,255,255,0.8);
-      margin-top: 8px; letter-spacing: 0.5px;
+      font-size: clamp(16px, 2.5vw, 24px); font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      margin-top: 6px; letter-spacing: 0.3px;
     }
     .lock-hint {
       position: relative; z-index: 2;
-      margin-top: 60px; font-size: 14px;
-      color: rgba(255,255,255,0.5);
-      animation: pulse-hint 2s ease-in-out infinite;
+      margin-top: 60px; font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      animation: pulse-hint 2.5s ease-in-out infinite;
     }
-    @keyframes pulse-hint {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
-    }
+    @keyframes pulse-hint { 0%,100%{opacity:.4} 50%{opacity:.9} }
 
-    /* ==================== PHASE 3: DESKTOP ==================== */
+    /* ========== DESKTOP ========== */
     #desktop {
       position: fixed; inset: 0; z-index: 100;
       display: none; flex-direction: column;
     }
-    #desktop.visible { display: flex; }
-    #desktop.visible { animation: fadeInDesktop 0.6s ease forwards; }
-    @keyframes fadeInDesktop { from { opacity: 0; } to { opacity: 1; } }
-
+    #desktop.visible { display: flex; animation: fadeIn .5s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     .desktop-wallpaper {
       position: absolute; inset: 0;
       background: url('wallpaper.jpg') center/cover no-repeat;
       background-color: #0a0a0a;
     }
 
-    /* ---------- Menu Bar ---------- */
+    /* ========== MENU BAR (macOS 15) ========== */
     .menu-bar {
-      position: relative; z-index: 10;
+      position: relative; z-index: 200;
       height: 25px;
-      background: rgba(0,0,0,0.28);
-      backdrop-filter: blur(40px) saturate(200%);
-      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      background: rgba(30,30,30,0.45);
+      backdrop-filter: blur(50px) saturate(180%);
+      -webkit-backdrop-filter: blur(50px) saturate(180%);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px;
-      color: rgba(255,255,255,0.95);
-      font-size: 13px; font-weight: 500;
+      padding: 0 10px 0 8px;
+      font-size: 13.5px; font-weight: 450;
+      color: rgba(255,255,255,0.92);
       flex-shrink: 0;
+      letter-spacing: 0.01em;
     }
-    .menu-left { display: flex; align-items: center; gap: 18px; }
-    .menu-apple-logo { width: 12px; height: 14px; opacity: 0.95; }
-    .menu-apple-logo svg { fill: #fff; width: 100%; height: 100%; }
-    .menu-right {
-      display: flex; align-items: center; gap: 16px;
-      font-size: 12px; font-weight: 400;
-      color: rgba(255,255,255,0.9);
+    .menu-left { display: flex; align-items: center; height: 100%; }
+    .menu-item {
+      height: 100%; padding: 0 10px;
+      display: flex; align-items: center;
+      border-radius: 4px;
+      cursor: default;
+      position: relative;
+      white-space: nowrap;
     }
-    .menu-right span { white-space: nowrap; }
+    .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.15); }
+    .menu-item.apple-menu { padding: 0 10px; }
+    .menu-item.apple-menu svg { fill: #fff; width: 12px; height: 14px; }
+    .menu-item.app-name { font-weight: 620; }
 
-    /* ---------- Desktop Icons ---------- */
+    .menu-right {
+      display: flex; align-items: center; gap: 4px; height: 100%;
+    }
+    .menu-right-item {
+      height: 100%; padding: 0 6px;
+      display: flex; align-items: center;
+      border-radius: 4px;
+      cursor: default;
+      font-size: 12px; font-weight: 400;
+      color: rgba(255,255,255,0.88);
+    }
+    .menu-right-item:hover { background: rgba(255,255,255,0.12); }
+
+    /* Dropdown menu */
+    .dropdown {
+      position: absolute;
+      top: 100%; left: 0;
+      min-width: 220px;
+      background: rgba(40,40,42,0.88);
+      backdrop-filter: blur(60px) saturate(200%);
+      -webkit-backdrop-filter: blur(60px) saturate(200%);
+      border-radius: 6px;
+      border: 0.5px solid rgba(255,255,255,0.18);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(0,0,0,0.3);
+      padding: 4px;
+      display: none;
+      z-index: 999;
+    }
+    .dropdown.show { display: block; }
+    .dropdown-item {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 13px; color: rgba(255,255,255,0.88);
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: default;
+      white-space: nowrap;
+    }
+    .dropdown-item:hover { background: #0A84FF; color: #fff; }
+    .dropdown-sep { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 10px; }
+    .dropdown-item .shortcut { font-size: 12px; color: rgba(255,255,255,0.45); margin-left: 30px; }
+    .dropdown-item:hover .shortcut { color: rgba(255,255,255,0.7); }
+    .dropdown-item.disabled { color: rgba(255,255,255,0.25); pointer-events: none; }
+
+    /* ========== DESKTOP ICONS ========== */
     .desktop-icons {
       position: relative; z-index: 5;
       flex: 1;
-      padding: 20px 24px;
+      padding: 16px 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fill, 82px);
-      grid-template-rows: repeat(auto-fill, 96px);
+      grid-template-columns: repeat(auto-fill, 80px);
+      grid-template-rows: repeat(auto-fill, 94px);
       grid-auto-flow: column;
-      gap: 4px;
+      gap: 2px;
       align-content: start;
       justify-content: end;
     }
-
     .desktop-icon {
       display: flex; flex-direction: column;
       align-items: center; justify-content: flex-start;
-      width: 82px; height: 96px;
-      padding: 4px;
+      width: 80px; height: 94px;
+      padding: 4px 2px;
       border-radius: 6px;
       cursor: default;
       text-decoration: none;
-      transition: background 0.1s ease;
     }
-    .desktop-icon:hover { background: rgba(255,255,255,0.08); }
-    .desktop-icon.selected { background: rgba(59,130,246,0.35); }
-
+    .desktop-icon:hover { background: rgba(255,255,255,0.06); }
+    .desktop-icon.selected { background: rgba(0,122,255,0.32); }
     .icon-img {
       width: 64px; height: 64px;
-      border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 4px;
-      position: relative;
-      overflow: visible;
+      margin-bottom: 2px;
     }
-
     .icon-label {
       font-size: 11px; color: #fff;
-      text-align: center; line-height: 1.2;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
-      max-width: 76px;
+      text-align: center; line-height: 1.15;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(0,0,0,0.4);
+      max-width: 74px;
       overflow: hidden; text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    /* ---------- Dock ---------- */
+    /* ========== DOCK (macOS 15) ========== */
     .dock-wrapper {
       position: relative; z-index: 10;
       display: flex; justify-content: center;
-      padding-bottom: 4px;
+      padding-bottom: 3px;
       flex-shrink: 0;
     }
     .dock {
       display: flex; align-items: flex-end;
-      gap: 2px;
-      padding: 3px 6px 3px;
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(40px) saturate(200%);
-      -webkit-backdrop-filter: blur(40px) saturate(200%);
-      border-radius: 16px;
-      border: 0.5px solid rgba(255,255,255,0.25);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+      gap: 1px;
+      padding: 3px 5px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(50px) saturate(200%);
+      -webkit-backdrop-filter: blur(50px) saturate(200%);
+      border-radius: 18px;
+      border: 0.5px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 0 0.5px rgba(0,0,0,0.25), 0 4px 24px rgba(0,0,0,0.35);
     }
-    .dock-separator {
-      width: 1px; height: 40px;
-      background: rgba(255,255,255,0.2);
-      margin: 0 4px; align-self: center;
-    }
+    .dock-sep { width: 1px; height: 38px; background: rgba(255,255,255,0.15); margin: 0 4px; align-self: center; }
     .dock-item {
-      width: 50px; height: 50px;
+      width: 52px; height: 52px;
       display: flex; align-items: center; justify-content: center;
       cursor: default;
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
       position: relative;
-      text-decoration: none;
     }
-    .dock-item:hover { transform: scale(1.35) translateY(-10px); }
-    .dock-item .dock-icon-wrap {
-      width: 46px; height: 46px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .dock-item:hover { transform: scale(1.4) translateY(-12px); }
+    .dock-icon-wrap { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
     .dock-item .tooltip {
-      position: absolute;
-      bottom: 60px; left: 50%;
-      transform: translateX(-50%) scale(0.85);
-      background: rgba(0,0,0,0.72);
-      backdrop-filter: blur(12px);
-      color: #fff; font-size: 12px;
-      padding: 4px 10px; border-radius: 4px;
+      position: absolute; bottom: 62px; left: 50%;
+      transform: translateX(-50%) scale(0.8);
+      background: rgba(30,30,32,0.82);
+      backdrop-filter: blur(16px);
+      color: #fff; font-size: 12px; font-weight: 450;
+      padding: 3px 10px; border-radius: 4px;
+      border: 0.5px solid rgba(255,255,255,0.12);
       white-space: nowrap;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.12s, transform 0.12s;
+      transition: opacity .12s, transform .12s;
     }
     .dock-item:hover .tooltip { opacity: 1; transform: translateX(-50%) scale(1); }
     .dock-dot {
-      position: absolute; bottom: -3px; left: 50%;
+      position: absolute; bottom: -2px; left: 50%;
       transform: translateX(-50%);
       width: 4px; height: 4px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.72);
       display: none;
     }
     .dock-item.running .dock-dot { display: block; }
 
-    /* ---------- Safari Window ---------- */
+    /* ========== SAFARI WINDOW ========== */
     #safari-overlay {
       position: fixed; inset: 0; z-index: 500;
       display: none;
-      background: rgba(0,0,0,0.3);
     }
     #safari-overlay.visible { display: block; }
-
     #safari-window {
-      position: absolute;
-      top: 25px; left: 0; right: 0; bottom: 0;
+      position: absolute; top: 25px; left: 0; right: 0; bottom: 0;
       display: flex; flex-direction: column;
-      transform: scale(0.92) translateY(20px);
+      transform: scale(0.94) translateY(16px);
       opacity: 0;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+      transition: transform .28s cubic-bezier(0.16,1,0.3,1), opacity .22s ease;
     }
-    #safari-overlay.visible #safari-window {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-    #safari-overlay.closing #safari-window {
-      transform: scale(0.92) translateY(20px);
-      opacity: 0;
-    }
+    #safari-overlay.visible #safari-window { transform: scale(1) translateY(0); opacity: 1; }
+    #safari-overlay.closing #safari-window { transform: scale(0.94) translateY(16px); opacity: 0; }
 
     .safari-toolbar {
       height: 52px;
-      background: rgba(40,40,42,0.92);
-      backdrop-filter: blur(30px) saturate(180%);
-      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      background: rgba(38,38,40,0.92);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
       display: flex; align-items: center;
-      padding: 0 12px;
-      gap: 12px;
+      padding: 0 14px; gap: 12px;
       flex-shrink: 0;
-      border-bottom: 0.5px solid rgba(255,255,255,0.08);
+      border-bottom: 0.5px solid rgba(255,255,255,0.06);
     }
+    .traffic-lights { display: flex; gap: 8px; padding: 0 2px; flex-shrink: 0; }
+    .tl {
+      width: 12px; height: 12px; border-radius: 50%;
+      cursor: default; position: relative;
+    }
+    .tl-close { background: #FF5F57; }
+    .tl-min { background: #FFBD2E; }
+    .tl-max { background: #28C840; }
+    .traffic-lights:hover .tl-close::after { content: '×'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: rgba(80,0,0,0.6); }
+    .traffic-lights:hover .tl-min::after { content: '−'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: rgba(80,50,0,0.5); line-height: 1; }
+    .traffic-lights:hover .tl-max::after { content: ''; position: absolute; inset: 3px; border: 1.5px solid rgba(0,60,0,0.5); border-radius: 1px; }
 
-    .traffic-lights {
-      display: flex; gap: 8px;
-      padding: 0 4px;
-      flex-shrink: 0;
-    }
-    .traffic-light {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      cursor: default;
-      position: relative;
-      transition: opacity 0.15s;
-    }
-    .traffic-light.close { background: #FF5F57; }
-    .traffic-light.minimize { background: #FFBD2E; }
-    .traffic-light.maximize { background: #28C840; }
-    .traffic-lights:hover .traffic-light.close::after {
-      content: '×'; position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.5);
-      line-height: 1;
-    }
-    .traffic-lights:hover .traffic-light.minimize::after {
-      content: '−'; position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: rgba(0,0,0,0.5);
-      line-height: 1;
-    }
-    .traffic-lights:hover .traffic-light.maximize::after {
-      content: '+'; position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: rgba(0,0,0,0.4);
-      line-height: 1; padding-bottom: 1px;
-    }
-
-    .safari-nav-buttons {
-      display: flex; gap: 6px; flex-shrink: 0;
-    }
-    .safari-nav-btn {
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 6px; cursor: default;
-      color: rgba(255,255,255,0.3);
-    }
-
-    .safari-address-bar {
-      flex: 1;
-      height: 30px;
-      background: rgba(255,255,255,0.08);
+    .safari-nav { display: flex; gap: 4px; flex-shrink: 0; }
+    .safari-nav-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 5px; color: rgba(255,255,255,0.3); }
+    .safari-addr {
+      flex: 1; height: 30px;
+      background: rgba(255,255,255,0.07);
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       padding: 0 12px;
-      font-size: 12px; color: rgba(255,255,255,0.55);
-      gap: 6px;
-      min-width: 0;
+      font-size: 12.5px; color: rgba(255,255,255,0.5);
+      gap: 5px; min-width: 0;
     }
-    .safari-address-bar .lock-icon { opacity: 0.5; flex-shrink: 0; }
-    .safari-address-bar .url-text {
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
+    .safari-addr .url-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .safari-content { flex: 1; background: #fff; overflow: hidden; }
+    .safari-content iframe { width: 100%; height: 100%; border: none; }
 
-    .safari-share-btn {
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 6px; cursor: default;
-      color: rgba(255,255,255,0.4); flex-shrink: 0;
-    }
-
-    .safari-content {
-      flex: 1;
-      background: #fff;
-      overflow: hidden;
-    }
-    .safari-content iframe {
-      width: 100%; height: 100%;
-      border: none;
-    }
-
-    /* ---------- About Me (inline page) ---------- */
+    /* ========== ABOUT ME ========== */
     .about-me-page {
       width: 100%; height: 100%;
-      background: linear-gradient(160deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      background: linear-gradient(160deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
       display: flex; align-items: center; justify-content: center;
       overflow: auto;
     }
-    .about-card {
-      text-align: center;
-      padding: 60px 48px;
-      max-width: 480px;
-    }
+    .about-card { text-align: center; padding: 60px 48px; max-width: 480px; }
     .about-avatar {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin: 0 auto 28px;
+      width: 96px; height: 96px; border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0 auto 24px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 42px; color: #fff; font-weight: 600;
-      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+      font-size: 40px; color: #fff; font-weight: 600;
+      box-shadow: 0 8px 32px rgba(102,126,234,0.3);
     }
-    .about-name {
-      font-size: 36px; font-weight: 700; color: #fff;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
-    .about-subtitle {
-      font-size: 17px; color: rgba(255,255,255,0.5);
-      font-weight: 400;
-      margin-bottom: 40px;
-    }
-    .about-contact {
-      display: flex; flex-direction: column;
-      gap: 14px; align-items: center;
-    }
-    .about-contact-item {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 15px; color: rgba(255,255,255,0.7);
-    }
-    .about-contact-item svg {
-      width: 18px; height: 18px;
-      stroke: rgba(255,255,255,0.45);
-      fill: none; stroke-width: 1.8;
-      flex-shrink: 0;
-    }
+    .about-name { font-size: 34px; font-weight: 700; color: #fff; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .about-sub { font-size: 16px; color: rgba(255,255,255,0.45); margin-bottom: 36px; }
+    .about-row { display: flex; align-items: center; gap: 10px; font-size: 15px; color: rgba(255,255,255,0.65); justify-content: center; margin-bottom: 14px; }
+    .about-row svg { width: 18px; height: 18px; stroke: rgba(255,255,255,0.4); fill: none; stroke-width: 1.8; flex-shrink: 0; }
 
-    /* ---------- Bounce Animation ---------- */
-    .desktop-icon.opening .icon-img { animation: bounceIcon 0.35s ease; }
-    .dock-item.opening .dock-icon-wrap { animation: bounceIcon 0.35s ease; }
-    @keyframes bounceIcon {
-      0% { transform: scale(1); }
-      30% { transform: scale(0.82); }
-      60% { transform: scale(1.06); }
-      100% { transform: scale(1); }
-    }
+    /* ========== ICON BOUNCE ========== */
+    .desktop-icon.opening .icon-img { animation: bounce .35s ease; }
+    .dock-item.opening .dock-icon-wrap { animation: bounce .35s ease; }
+    @keyframes bounce { 0%{transform:scale(1)} 30%{transform:scale(.82)} 60%{transform:scale(1.06)} 100%{transform:scale(1)} }
   </style>
 </head>
 <body>
 
-<!-- ==================== BOOT SCREEN ==================== -->
+<!-- BOOT -->
 <div id="boot-screen">
   <div class="apple-logo-boot">
-    <svg viewBox="0 0 814 1000" xmlns="http://www.w3.org/2000/svg">
-      <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57.8-155.5-127.4c-58.5-81.8-105.9-209.6-105.9-330.8 0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/>
-    </svg>
+    <svg viewBox="0 0 814 1000" xmlns="http://www.w3.org/2000/svg"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57.8-155.5-127.4c-58.5-81.8-105.9-209.6-105.9-330.8 0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
   </div>
-  <div class="progress-track">
-    <div class="progress-fill" id="boot-progress"></div>
-  </div>
+  <div class="progress-track"><div class="progress-fill" id="boot-progress"></div></div>
 </div>
 
-<!-- ==================== LOCK SCREEN ==================== -->
+<!-- LOCK SCREEN -->
 <div id="lock-screen">
-  <div class="sonoma-wallpaper"></div>
+  <div class="lock-wallpaper"></div>
   <div class="lock-time" id="lock-time">00:00</div>
   <div class="lock-date" id="lock-date"></div>
   <div class="lock-hint">点击任意位置解锁</div>
 </div>
 
-<!-- ==================== DESKTOP ==================== -->
+<!-- DESKTOP -->
 <div id="desktop">
   <div class="desktop-wallpaper"></div>
 
   <!-- Menu Bar -->
   <div class="menu-bar" id="menu-bar">
     <div class="menu-left">
-      <div class="menu-apple-logo">
-        <svg viewBox="0 0 814 1000" xmlns="http://www.w3.org/2000/svg">
-          <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57.8-155.5-127.4c-58.5-81.8-105.9-209.6-105.9-330.8 0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/>
-        </svg>
+      <div class="menu-item apple-menu" data-menu="apple">
+        <svg viewBox="0 0 814 1000" xmlns="http://www.w3.org/2000/svg"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57.8-155.5-127.4c-58.5-81.8-105.9-209.6-105.9-330.8 0-194.4 126.4-297.5 250.8-297.5 66.1 0 121.2 43.4 162.7 43.4 39.5 0 101.1-46 176.3-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/></svg>
+        <div class="dropdown" id="dropdown-apple">
+          <div class="dropdown-item">关于本机</div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">系统设置...<span class="shortcut"></span></div>
+          <div class="dropdown-item">App Store...</div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">最近使用的项目 <span class="shortcut">▸</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">强制退出...<span class="shortcut">⌥⌘⎋</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">睡眠</div>
+          <div class="dropdown-item">重新启动...</div>
+          <div class="dropdown-item">关机...</div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">锁定屏幕<span class="shortcut">⌃⌘Q</span></div>
+          <div class="dropdown-item">退出登录...<span class="shortcut">⇧⌘Q</span></div>
+        </div>
       </div>
-      <span id="menu-app-name" style="font-weight:600;">Finder</span>
-      <span>文件</span>
-      <span>编辑</span>
-      <span>显示</span>
-      <span>前往</span>
-      <span>窗口</span>
-      <span>帮助</span>
+      <div class="menu-item app-name" id="menu-app-name" data-menu="app">
+        Finder
+        <div class="dropdown" id="dropdown-app">
+          <div class="dropdown-item">关于 Finder</div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">设置...<span class="shortcut">⌘,</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">清倒废纸篓...<span class="shortcut">⇧⌘⌫</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">隐藏 Finder<span class="shortcut">⌘H</span></div>
+          <div class="dropdown-item">隐藏其他<span class="shortcut">⌥⌘H</span></div>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="file">文件
+        <div class="dropdown" id="dropdown-file">
+          <div class="dropdown-item">新建 Finder 窗口<span class="shortcut">⌘N</span></div>
+          <div class="dropdown-item">新建标签页<span class="shortcut">⌘T</span></div>
+          <div class="dropdown-item">新建文件夹<span class="shortcut">⇧⌘N</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">打开<span class="shortcut">⌘O</span></div>
+          <div class="dropdown-item">关闭窗口<span class="shortcut">⌘W</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">显示简介<span class="shortcut">⌘I</span></div>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="edit">编辑
+        <div class="dropdown" id="dropdown-edit">
+          <div class="dropdown-item">撤销<span class="shortcut">⌘Z</span></div>
+          <div class="dropdown-item">重做<span class="shortcut">⇧⌘Z</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">剪切<span class="shortcut">⌘X</span></div>
+          <div class="dropdown-item">拷贝<span class="shortcut">⌘C</span></div>
+          <div class="dropdown-item">粘贴<span class="shortcut">⌘V</span></div>
+          <div class="dropdown-item">全选<span class="shortcut">⌘A</span></div>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="view">显示
+        <div class="dropdown" id="dropdown-view">
+          <div class="dropdown-item">以图标显示<span class="shortcut">⌘1</span></div>
+          <div class="dropdown-item">以列表显示<span class="shortcut">⌘2</span></div>
+          <div class="dropdown-item">以分栏显示<span class="shortcut">⌘3</span></div>
+          <div class="dropdown-item">以画廊显示<span class="shortcut">⌘4</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">隐藏工具栏<span class="shortcut">⌥⌘T</span></div>
+          <div class="dropdown-item">隐藏路径栏</div>
+          <div class="dropdown-item">隐藏状态栏</div>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="go">前往
+        <div class="dropdown" id="dropdown-go">
+          <div class="dropdown-item">后退<span class="shortcut">⌘[</span></div>
+          <div class="dropdown-item">前进<span class="shortcut">⌘]</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">个人收藏</div>
+          <div class="dropdown-item">最近使用</div>
+          <div class="dropdown-item">文稿</div>
+          <div class="dropdown-item">桌面</div>
+          <div class="dropdown-item">下载<span class="shortcut">⌥⌘L</span></div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">前往文件夹...<span class="shortcut">⇧⌘G</span></div>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="window">窗口
+        <div class="dropdown" id="dropdown-window">
+          <div class="dropdown-item">最小化<span class="shortcut">⌘M</span></div>
+          <div class="dropdown-item">缩放</div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">将所有窗口移到前面</div>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="help">帮助
+        <div class="dropdown" id="dropdown-help">
+          <div class="dropdown-item">macOS 帮助</div>
+          <div class="dropdown-sep"></div>
+          <div class="dropdown-item">Finder 使用手册</div>
+        </div>
+      </div>
     </div>
     <div class="menu-right">
-      <!-- Wi-Fi icon -->
-      <span>
-        <svg width="14" height="12" viewBox="0 0 16 12" fill="none" style="vertical-align:middle;">
-          <path d="M1 3.5C4.5 0.5 11.5 0.5 15 3.5" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linecap="round"/>
-          <path d="M3.5 6C5.8 4 10.2 4 12.5 6" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linecap="round"/>
-          <path d="M6 8.5C7.2 7.5 8.8 7.5 10 8.5" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="1" fill="rgba(255,255,255,0.85)"/>
-        </svg>
-      </span>
-      <!-- Battery -->
-      <span>
-        <svg width="22" height="11" viewBox="0 0 22 11" fill="none" style="vertical-align:middle;">
-          <rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="rgba(255,255,255,0.7)" stroke-width="1"/>
-          <rect x="19.5" y="3.5" width="2" height="4" rx="0.8" fill="rgba(255,255,255,0.4)"/>
-          <rect x="2" y="2" width="14" height="7" rx="1.2" fill="rgba(255,255,255,0.8)"/>
-        </svg>
-      </span>
-      <span id="menu-clock" style="min-width:130px;text-align:right;">00:00</span>
+      <div class="menu-right-item">
+        <svg width="15" height="11" viewBox="0 0 16 12" fill="none" style="vertical-align:middle;"><path d="M1 3.5C4.5.5 11.5.5 15 3.5" stroke="rgba(255,255,255,.85)" stroke-width="1.4" stroke-linecap="round"/><path d="M3.5 6C5.8 4 10.2 4 12.5 6" stroke="rgba(255,255,255,.85)" stroke-width="1.4" stroke-linecap="round"/><path d="M6 8.5C7.2 7.5 8.8 7.5 10 8.5" stroke="rgba(255,255,255,.85)" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="rgba(255,255,255,.85)"/></svg>
+      </div>
+      <div class="menu-right-item">
+        <svg width="20" height="10" viewBox="0 0 22 11" fill="none" style="vertical-align:middle;"><rect x=".5" y=".5" width="18" height="10" rx="2.5" stroke="rgba(255,255,255,.65)" stroke-width="1"/><rect x="19.5" y="3.5" width="2" height="4" rx=".8" fill="rgba(255,255,255,.35)"/><rect x="2" y="2" width="14" height="7" rx="1.2" fill="rgba(255,255,255,.75)"/></svg>
+      </div>
+      <div class="menu-right-item" id="menu-clock" style="min-width:135px;text-align:right;font-variant-numeric:tabular-nums;">00:00</div>
     </div>
   </div>
 
   <!-- Desktop Icons -->
   <div class="desktop-icons" id="desktop-icons">
-    <!-- About Me — always first -->
-    <div class="desktop-icon" data-app="about-me" ondblclick="openAppFromDesktop(this)">
+    <!-- About Me -->
+    <div class="desktop-icon" data-app="about-me" ondblclick="openApp(this)">
       <div class="icon-img">
-        <svg width="64" height="64" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="contactGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#5AC8FA"/>
-              <stop offset="100%" stop-color="#007AFF"/>
-            </linearGradient>
-          </defs>
-          <rect width="120" height="120" rx="26" fill="url(#contactGrad)"/>
-          <circle cx="60" cy="44" r="18" fill="none" stroke="#fff" stroke-width="4"/>
-          <path d="M30 95c0-16.6 13.4-28 30-28s30 11.4 30 28" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-        </svg>
+        <!-- macOS Contacts icon style -->
+        <svg width="64" height="64" viewBox="0 0 120 120"><defs><linearGradient id="g-contact" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#f0f0f0"/><stop offset="100%" stop-color="#d0d0d0"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-contact)"/><rect x="6" y="8" width="108" height="104" rx="20" fill="#fff"/><rect x="3" y="0" width="6" height="120" rx="3" fill="#c8c8c8"/><circle cx="60" cy="44" r="16" fill="#b0b8c0"/><path d="M34 90c0-14.4 11.6-24 26-24s26 9.6 26 24" fill="#b0b8c0"/></svg>
       </div>
       <span class="icon-label">关于我</span>
     </div>
 
     <!-- Vibe Coding -->
-    <div class="desktop-icon" data-app="vibe-coding" data-url="vibe-coding-guide.html" ondblclick="openAppFromDesktop(this)">
+    <div class="desktop-icon" data-app="vibe-coding" data-url="vibe-coding-guide.html" ondblclick="openApp(this)">
       <div class="icon-img">
-        <svg width="64" height="64" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="vibeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#5856D6"/>
-              <stop offset="50%" stop-color="#AF52DE"/>
-              <stop offset="100%" stop-color="#FF2D55"/>
-            </linearGradient>
-          </defs>
-          <rect width="120" height="120" rx="26" fill="url(#vibeGrad)"/>
-          <path d="M60 28L38 68h20l-6 24 28-40H62l6-24z" fill="#fff" opacity="0.95"/>
-        </svg>
+        <svg width="64" height="64" viewBox="0 0 120 120"><defs><linearGradient id="g-vibe" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5856D6"/><stop offset="50%" stop-color="#AF52DE"/><stop offset="100%" stop-color="#FF2D55"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-vibe)"/><path d="M60 28L38 68h20l-6 24 28-40H62l6-24z" fill="#fff" opacity=".95"/></svg>
       </div>
       <span class="icon-label">Vibe Coding</span>
     </div>
@@ -502,52 +484,59 @@
   <!-- Dock -->
   <div class="dock-wrapper">
     <div class="dock" id="dock">
-      <!-- Finder -->
-      <div class="dock-item running" data-app="finder">
+      <!-- Finder: macOS 15 classic two-tone face -->
+      <div class="dock-item running">
         <div class="dock-icon-wrap">
-          <svg width="46" height="46" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <svg width="48" height="48" viewBox="0 0 120 120">
             <defs>
-              <linearGradient id="finderGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#6DC5FB"/>
-                <stop offset="100%" stop-color="#47A0F5"/>
-              </linearGradient>
+              <clipPath id="sq"><rect width="120" height="120" rx="26"/></clipPath>
             </defs>
-            <rect width="120" height="120" rx="26" fill="url(#finderGrad)"/>
-            <!-- Face -->
-            <rect x="36" y="24" width="48" height="72" rx="24" fill="none" stroke="#fff" stroke-width="5"/>
-            <!-- Eyes -->
-            <ellipse cx="50" cy="52" rx="4" ry="5" fill="#fff"/>
-            <ellipse cx="70" cy="52" rx="4" ry="5" fill="#fff"/>
-            <!-- Nose line -->
-            <line x1="60" y1="50" x2="60" y2="68" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-            <!-- Smile -->
-            <path d="M48 72 Q60 82 72 72" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+            <g clip-path="url(#sq)">
+              <!-- Left half: blue -->
+              <rect x="0" y="0" width="60" height="120" fill="#4FC3F7"/>
+              <!-- Right half: purple -->
+              <rect x="60" y="0" width="60" height="120" fill="#7B68EE"/>
+              <!-- Face outline -->
+              <rect x="26" y="16" width="68" height="88" rx="34" fill="none" stroke="#fff" stroke-width="6"/>
+              <!-- Left eye -->
+              <ellipse cx="48" cy="52" rx="4.5" ry="6" fill="#fff"/>
+              <!-- Right eye -->
+              <ellipse cx="72" cy="52" rx="4.5" ry="6" fill="#fff"/>
+              <!-- Nose -->
+              <line x1="60" y1="52" x2="60" y2="70" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+              <!-- Mouth -->
+              <path d="M44 76 Q60 88 76 76" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+            </g>
           </svg>
         </div>
         <span class="tooltip">Finder</span>
         <span class="dock-dot"></span>
       </div>
 
-      <!-- Safari -->
-      <div class="dock-item" data-app="safari" onclick="return false;">
+      <!-- Safari: macOS 15 compass icon -->
+      <div class="dock-item">
         <div class="dock-icon-wrap">
-          <svg width="46" height="46" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <svg width="48" height="48" viewBox="0 0 120 120">
             <defs>
-              <linearGradient id="safariGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#59D0F8"/>
-                <stop offset="100%" stop-color="#1A6EF5"/>
+              <linearGradient id="g-saf" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#56CCF2"/>
+                <stop offset="100%" stop-color="#2F80ED"/>
               </linearGradient>
             </defs>
-            <rect width="120" height="120" rx="26" fill="url(#safariGrad)"/>
-            <circle cx="60" cy="60" r="34" fill="none" stroke="#fff" stroke-width="3" opacity="0.6"/>
-            <!-- Compass needle -->
-            <polygon points="60,30 54,58 60,64 66,58" fill="#fff" opacity="0.9"/>
-            <polygon points="60,90 66,62 60,56 54,62" fill="#FF3B30" opacity="0.85"/>
-            <!-- Tick marks -->
-            <line x1="60" y1="24" x2="60" y2="30" stroke="#fff" stroke-width="2" opacity="0.5"/>
-            <line x1="60" y1="90" x2="60" y2="96" stroke="#fff" stroke-width="2" opacity="0.5"/>
-            <line x1="24" y1="60" x2="30" y2="60" stroke="#fff" stroke-width="2" opacity="0.5"/>
-            <line x1="90" y1="60" x2="96" y2="60" stroke="#fff" stroke-width="2" opacity="0.5"/>
+            <rect width="120" height="120" rx="26" fill="url(#g-saf)"/>
+            <circle cx="60" cy="60" r="36" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+            <!-- Tick marks around circle -->
+            <g stroke="#fff" stroke-width="1.5" opacity=".5">
+              <line x1="60" y1="22" x2="60" y2="28"/><line x1="60" y1="92" x2="60" y2="98"/>
+              <line x1="22" y1="60" x2="28" y2="60"/><line x1="92" y1="60" x2="98" y2="60"/>
+              <line x1="32.6" y1="32.6" x2="36.8" y2="36.8"/><line x1="83.2" y1="83.2" x2="87.4" y2="87.4"/>
+              <line x1="87.4" y1="32.6" x2="83.2" y2="36.8"/><line x1="36.8" y1="83.2" x2="32.6" y2="87.4"/>
+            </g>
+            <!-- Compass diamond -->
+            <polygon points="60,28 52,58 60,66 68,58" fill="#fff" opacity=".92"/>
+            <polygon points="60,92 68,62 60,54 52,62" fill="#FF3B30" opacity=".88"/>
+            <!-- Center dot -->
+            <circle cx="60" cy="60" r="3" fill="#fff"/>
           </svg>
         </div>
         <span class="tooltip">Safari</span>
@@ -555,73 +544,74 @@
       </div>
 
       <!-- Launchpad -->
-      <div class="dock-item" onclick="return false;">
+      <div class="dock-item">
         <div class="dock-icon-wrap">
-          <svg width="46" height="46" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="launchGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#444"/>
-                <stop offset="100%" stop-color="#222"/>
-              </linearGradient>
-            </defs>
-            <rect width="120" height="120" rx="26" fill="url(#launchGrad)"/>
-            <!-- 4x4 grid dots -->
-            <circle cx="36" cy="36" r="8" fill="#FF9500"/><circle cx="56" cy="36" r="8" fill="#4CD964"/>
-            <circle cx="76" cy="36" r="8" fill="#5AC8FA"/><circle cx="96" cy="36" r="8" fill="#FF2D55"/>
-            <circle cx="36" cy="56" r="8" fill="#5856D6"/><circle cx="56" cy="56" r="8" fill="#FF3B30"/>
-            <circle cx="76" cy="56" r="8" fill="#FFCC00"/><circle cx="96" cy="56" r="8" fill="#34AADC"/>
-            <circle cx="36" cy="76" r="8" fill="#8E8E93"/><circle cx="56" cy="76" r="8" fill="#007AFF"/>
-            <circle cx="76" cy="76" r="8" fill="#FF9500"/><circle cx="96" cy="76" r="8" fill="#4CD964"/>
+          <svg width="48" height="48" viewBox="0 0 120 120">
+            <rect width="120" height="120" rx="26" fill="#1c1c1e"/>
+            <!-- 4x4 rounded squares -->
+            <g>
+              <rect x="18" y="18" rx="5" width="18" height="18" fill="#FF9500"/>
+              <rect x="42" y="18" rx="5" width="18" height="18" fill="#30D158"/>
+              <rect x="66" y="18" rx="5" width="18" height="18" fill="#64D2FF"/>
+              <rect x="90" y="18" rx="5" width="12" height="18" fill="#FF375F"/>
+              <rect x="18" y="42" rx="5" width="18" height="18" fill="#BF5AF2"/>
+              <rect x="42" y="42" rx="5" width="18" height="18" fill="#FF453A"/>
+              <rect x="66" y="42" rx="5" width="18" height="18" fill="#FFD60A"/>
+              <rect x="90" y="42" rx="5" width="12" height="18" fill="#0A84FF"/>
+              <rect x="18" y="66" rx="5" width="18" height="18" fill="#0A84FF"/>
+              <rect x="42" y="66" rx="5" width="18" height="18" fill="#FF9F0A"/>
+              <rect x="66" y="66" rx="5" width="18" height="18" fill="#30D158"/>
+              <rect x="90" y="66" rx="5" width="12" height="18" fill="#AC8E68"/>
+              <rect x="18" y="90" rx="5" width="18" height="12" fill="#FF375F"/>
+              <rect x="42" y="90" rx="5" width="18" height="12" fill="#5E5CE6"/>
+              <rect x="66" y="90" rx="5" width="18" height="12" fill="#64D2FF"/>
+              <rect x="90" y="90" rx="5" width="12" height="12" fill="#FF9500"/>
+            </g>
           </svg>
         </div>
         <span class="tooltip">Launchpad</span>
         <span class="dock-dot"></span>
       </div>
 
-      <div class="dock-separator"></div>
+      <div class="dock-sep"></div>
 
-      <!-- About Me in dock -->
-      <div class="dock-item" data-app="about-me" ondblclick="openAppFromDock(this)">
+      <!-- About Me -->
+      <div class="dock-item" data-app="about-me" ondblclick="openApp(this)">
         <div class="dock-icon-wrap">
-          <svg width="46" height="46" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-            <rect width="120" height="120" rx="26" fill="url(#contactGrad)"/>
-            <circle cx="60" cy="44" r="18" fill="none" stroke="#fff" stroke-width="4"/>
-            <path d="M30 95c0-16.6 13.4-28 30-28s30 11.4 30 28" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-          </svg>
+          <svg width="48" height="48" viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="url(#g-contact)"/><rect x="6" y="8" width="108" height="104" rx="20" fill="#fff"/><rect x="3" y="0" width="6" height="120" rx="3" fill="#c8c8c8"/><circle cx="60" cy="44" r="16" fill="#b0b8c0"/><path d="M34 90c0-14.4 11.6-24 26-24s26 9.6 26 24" fill="#b0b8c0"/></svg>
         </div>
         <span class="tooltip">关于我</span>
         <span class="dock-dot"></span>
       </div>
 
-      <!-- Vibe Coding in dock -->
-      <div class="dock-item" data-app="vibe-coding" data-url="vibe-coding-guide.html" ondblclick="openAppFromDock(this)">
+      <!-- Vibe Coding -->
+      <div class="dock-item" data-app="vibe-coding" data-url="vibe-coding-guide.html" ondblclick="openApp(this)">
         <div class="dock-icon-wrap">
-          <svg width="46" height="46" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-            <rect width="120" height="120" rx="26" fill="url(#vibeGrad)"/>
-            <path d="M60 28L38 68h20l-6 24 28-40H62l6-24z" fill="#fff" opacity="0.95"/>
-          </svg>
+          <svg width="48" height="48" viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="url(#g-vibe)"/><path d="M60 28L38 68h20l-6 24 28-40H62l6-24z" fill="#fff" opacity=".95"/></svg>
         </div>
         <span class="tooltip">Vibe Coding</span>
         <span class="dock-dot"></span>
       </div>
 
-      <div class="dock-separator"></div>
+      <div class="dock-sep"></div>
 
-      <!-- Trash -->
-      <div class="dock-item" onclick="return false;">
+      <!-- Trash: macOS 15 wire mesh style -->
+      <div class="dock-item">
         <div class="dock-icon-wrap">
-          <svg width="46" height="46" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="trashGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#8E8E93"/>
-                <stop offset="100%" stop-color="#636366"/>
-              </linearGradient>
-            </defs>
-            <rect width="120" height="120" rx="26" fill="url(#trashGrad)"/>
-            <path d="M40 42h40M52 42V36a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-            <path d="M44 42l3 46a4 4 0 0 0 4 4h18a4 4 0 0 0 4-4l3-46" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-            <line x1="54" y1="52" x2="54" y2="82" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-            <line x1="66" y1="52" x2="66" y2="82" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+          <svg width="48" height="48" viewBox="0 0 120 120">
+            <rect width="120" height="120" rx="26" fill="none"/>
+            <!-- Trash can body -->
+            <path d="M36 40 L40 98 C40 102 44 106 48 106 L72 106 C76 106 80 102 80 98 L84 40" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="3" stroke-linejoin="round"/>
+            <!-- Lid -->
+            <path d="M30 40 L90 40" stroke="rgba(255,255,255,.7)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M50 40 L50 32 C50 28 54 26 58 26 L62 26 C66 26 70 28 70 32 L70 40" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="3" stroke-linecap="round"/>
+            <!-- Grid lines -->
+            <line x1="52" y1="50" x2="52" y2="96" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+            <line x1="60" y1="48" x2="60" y2="98" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+            <line x1="68" y1="50" x2="68" y2="96" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+            <line x1="38" y1="58" x2="82" y2="58" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <line x1="39" y1="74" x2="81" y2="74" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <line x1="40" y1="90" x2="80" y2="90" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
           </svg>
         </div>
         <span class="tooltip">废纸篓</span>
@@ -631,220 +621,139 @@
   </div>
 </div>
 
-<!-- ==================== SAFARI WINDOW OVERLAY ==================== -->
+<!-- SAFARI OVERLAY -->
 <div id="safari-overlay">
   <div id="safari-window">
     <div class="safari-toolbar">
       <div class="traffic-lights">
-        <div class="traffic-light close" onclick="closeSafari()"></div>
-        <div class="traffic-light minimize" onclick="minimizeSafari()"></div>
-        <div class="traffic-light maximize"></div>
+        <div class="tl tl-close" onclick="closeSafari()"></div>
+        <div class="tl tl-min" onclick="closeSafari()"></div>
+        <div class="tl tl-max"></div>
       </div>
-      <div class="safari-nav-buttons">
-        <div class="safari-nav-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </div>
-        <div class="safari-nav-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-        </div>
+      <div class="safari-nav">
+        <div class="safari-nav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div class="safari-nav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
       </div>
-      <div class="safari-address-bar">
-        <svg class="lock-icon" width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-          <rect x="1" y="5" width="8" height="6" rx="1.5"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5"/>
-        </svg>
+      <div class="safari-addr">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="opacity:.45;flex-shrink:0;"><rect x="1" y="5" width="8" height="6" rx="1.5"/><path d="M3 5V3.5a2 2 0 0 1 4 0V5"/></svg>
         <span class="url-text" id="safari-url">about:blank</span>
       </div>
-      <div class="safari-share-btn">
+      <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);flex-shrink:0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M12 2v13M8 6l4-4 4 4"/></svg>
       </div>
     </div>
-    <div class="safari-content" id="safari-content">
-      <!-- iframe or about-me injected here -->
-    </div>
+    <div class="safari-content" id="safari-content"></div>
   </div>
 </div>
 
 <script>
-  // ==================== CLOCKS ====================
-  const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-  function updateClocks() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const t = h + ':' + m;
-    const el = s => document.getElementById(s);
-    if (el('lock-time')) el('lock-time').textContent = t;
-    if (el('lock-date')) {
-      const mo = now.getMonth()+1, d = now.getDate(), wd = weekdays[now.getDay()];
-      el('lock-date').textContent = mo+'月'+d+'日 '+wd;
-    }
-    if (el('menu-clock')) {
-      const mo = now.getMonth()+1, d = now.getDate(), wd = weekdays[now.getDay()];
-      el('menu-clock').textContent = wd+' '+mo+'月'+d+'日 '+t;
-    }
-  }
-  updateClocks();
-  setInterval(updateClocks, 1000);
+// === Clocks ===
+const WD=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+function tick(){
+  const n=new Date(), h=String(n.getHours()).padStart(2,'0'), m=String(n.getMinutes()).padStart(2,'0'), t=h+':'+m;
+  const $ = s=>document.getElementById(s);
+  const mo=n.getMonth()+1, d=n.getDate(), wd=WD[n.getDay()];
+  if($('lock-time')) $('lock-time').textContent=t;
+  if($('lock-date')) $('lock-date').textContent=mo+'月'+d+'日 '+wd;
+  if($('menu-clock')) $('menu-clock').textContent=wd+' '+mo+'月'+d+'日 '+t;
+}
+tick(); setInterval(tick,1000);
 
-  // ==================== BOOT ====================
-  const bootScreen = document.getElementById('boot-screen');
-  const lockScreen = document.getElementById('lock-screen');
-  const desktop    = document.getElementById('desktop');
-  const progressFill = document.getElementById('boot-progress');
+// === Boot ===
+let prog=0;
+const bi=setInterval(()=>{
+  prog+=Math.random()*12+3;
+  if(prog>=100){prog=100;document.getElementById('boot-progress').style.width='100%';clearInterval(bi);
+    setTimeout(()=>{document.getElementById('boot-screen').classList.add('fade-out');
+      setTimeout(()=>{document.getElementById('boot-screen').style.display='none';document.getElementById('lock-screen').classList.add('visible');},800);
+    },400);
+  } else document.getElementById('boot-progress').style.width=prog+'%';
+},200);
 
-  let progress = 0;
-  const bootInterval = setInterval(() => {
-    progress += Math.random() * 12 + 3;
-    if (progress >= 100) {
-      progress = 100;
-      progressFill.style.width = '100%';
-      clearInterval(bootInterval);
-      setTimeout(() => {
-        bootScreen.classList.add('fade-out');
-        setTimeout(() => {
-          bootScreen.style.display = 'none';
-          lockScreen.classList.add('visible');
-        }, 800);
-      }, 400);
-    } else {
-      progressFill.style.width = progress + '%';
-    }
-  }, 200);
+// === Lock -> Desktop ===
+document.getElementById('lock-screen').addEventListener('click',()=>{
+  document.getElementById('lock-screen').classList.add('fade-out');
+  setTimeout(()=>{document.getElementById('lock-screen').style.display='none';document.getElementById('desktop').classList.add('visible');},600);
+});
 
-  // ==================== LOCK -> DESKTOP ====================
-  lockScreen.addEventListener('click', () => {
-    lockScreen.classList.add('fade-out');
-    setTimeout(() => {
-      lockScreen.style.display = 'none';
-      desktop.classList.add('visible');
-    }, 600);
+// === Menu bar dropdowns ===
+let activeMenu=null;
+document.querySelectorAll('.menu-item[data-menu]').forEach(item=>{
+  const dd=item.querySelector('.dropdown');
+  item.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(activeMenu===dd){closeMenus();return;}
+    closeMenus();
+    dd.classList.add('show');
+    item.classList.add('active');
+    activeMenu=dd;
   });
-
-  // ==================== APP REGISTRY ====================
-  const apps = {
-    'about-me': {
-      name: '关于我',
-      url: null, // inline content
-    },
-    'vibe-coding': {
-      name: 'Vibe Coding',
-      url: 'vibe-coding-guide.html',
-    }
-  };
-
-  let currentApp = null;
-
-  // ==================== ABOUT ME HTML ====================
-  function getAboutMeHTML() {
-    return '<div class="about-me-page">' +
-      '<div class="about-card">' +
-        '<div class="about-avatar">J</div>' +
-        '<div class="about-name">你好，我是 Jamie</div>' +
-        '<div class="about-subtitle">一个怕代码的设计师</div>' +
-        '<div class="about-contact">' +
-          '<div class="about-contact-item">' +
-            '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-            '<span>微信：jianjianshuile</span>' +
-          '</div>' +
-          '<div class="about-contact-item">' +
-            '<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-            '<span>邮箱：1039450800@qq.com</span>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }
-
-  // ==================== OPEN / CLOSE SAFARI ====================
-  function openSafari(appId) {
-    const overlay = document.getElementById('safari-overlay');
-    const content = document.getElementById('safari-content');
-    const urlText = document.getElementById('safari-url');
-    const menuName = document.getElementById('menu-app-name');
-    const app = apps[appId];
-    if (!app) return;
-
-    currentApp = appId;
-
-    // Mark dock item as running
-    document.querySelectorAll('.dock-item[data-app="'+appId+'"]').forEach(el => {
-      el.classList.add('running');
-    });
-
-    // Update menu bar
-    menuName.textContent = app.name;
-
-    if (app.url) {
-      content.innerHTML = '<iframe src="' + app.url + '" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>';
-      urlText.textContent = app.url;
-    } else {
-      // Inline content (About Me)
-      content.innerHTML = getAboutMeHTML();
-      urlText.textContent = '关于我 — Jamie';
-    }
-
-    overlay.classList.remove('closing');
-    overlay.classList.add('visible');
-  }
-
-  function closeSafari() {
-    const overlay = document.getElementById('safari-overlay');
-    const menuName = document.getElementById('menu-app-name');
-    overlay.classList.add('closing');
-
-    // Remove running state
-    if (currentApp) {
-      document.querySelectorAll('.dock-item[data-app="'+currentApp+'"]').forEach(el => {
-        el.classList.remove('running');
-      });
-    }
-
-    setTimeout(() => {
-      overlay.classList.remove('visible');
-      overlay.classList.remove('closing');
-      document.getElementById('safari-content').innerHTML = '';
-      menuName.textContent = 'Finder';
-      currentApp = null;
-    }, 300);
-  }
-
-  function minimizeSafari() {
-    closeSafari(); // Same behavior: go back to desktop
-  }
-
-  // ==================== OPEN FROM DESKTOP / DOCK ====================
-  function openAppFromDesktop(el) {
-    el.classList.add('opening');
-    const appId = el.getAttribute('data-app');
-    setTimeout(() => {
-      openSafari(appId);
-      el.classList.remove('opening');
-    }, 350);
-  }
-
-  function openAppFromDock(el) {
-    el.classList.add('opening');
-    const appId = el.getAttribute('data-app');
-    setTimeout(() => {
-      openSafari(appId);
-      el.classList.remove('opening');
-    }, 350);
-  }
-
-  // Desktop icon single click = select
-  document.querySelectorAll('.desktop-icon').forEach(icon => {
-    icon.addEventListener('click', (e) => {
-      document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
-      icon.classList.add('selected');
-    });
-  });
-
-  // Click on empty desktop = deselect all
-  document.getElementById('desktop-icons').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-      document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+  item.addEventListener('mouseenter',()=>{
+    if(activeMenu && activeMenu!==dd){
+      closeMenus();
+      dd.classList.add('show');
+      item.classList.add('active');
+      activeMenu=dd;
     }
   });
+});
+function closeMenus(){
+  document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('show'));
+  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
+  activeMenu=null;
+}
+document.addEventListener('click',()=>closeMenus());
+
+// === Apps ===
+const apps={'about-me':{name:'关于我'},'vibe-coding':{name:'Vibe Coding',url:'vibe-coding-guide.html'}};
+let curApp=null;
+
+function aboutHTML(){
+  return '<div class="about-me-page"><div class="about-card">'+
+    '<div class="about-avatar">J</div>'+
+    '<div class="about-name">你好，我是 Jamie</div>'+
+    '<div class="about-sub">一个怕代码的设计师</div>'+
+    '<div class="about-row"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg><span>微信：jianjianshuile</span></div>'+
+    '<div class="about-row"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>邮箱：1039450800@qq.com</span></div>'+
+    '</div></div>';
+}
+
+function openSafari(appId){
+  const app=apps[appId]; if(!app) return;
+  curApp=appId;
+  document.querySelectorAll('.dock-item[data-app="'+appId+'"]').forEach(e=>e.classList.add('running'));
+  document.getElementById('menu-app-name').childNodes[0].textContent=app.name;
+  const ct=document.getElementById('safari-content'), url=document.getElementById('safari-url');
+  if(app.url){ct.innerHTML='<iframe src="'+app.url+'"></iframe>';url.textContent=app.url;}
+  else{ct.innerHTML=aboutHTML();url.textContent='关于我 — Jamie';}
+  const ov=document.getElementById('safari-overlay');
+  ov.classList.remove('closing');ov.classList.add('visible');
+}
+
+function closeSafari(){
+  const ov=document.getElementById('safari-overlay');
+  ov.classList.add('closing');
+  if(curApp) document.querySelectorAll('.dock-item[data-app="'+curApp+'"]').forEach(e=>e.classList.remove('running'));
+  setTimeout(()=>{ov.classList.remove('visible','closing');document.getElementById('safari-content').innerHTML='';
+    document.getElementById('menu-app-name').childNodes[0].textContent='Finder';curApp=null;},280);
+}
+
+function openApp(el){
+  el.classList.add('opening');
+  const appId=el.getAttribute('data-app');
+  setTimeout(()=>{openSafari(appId);el.classList.remove('opening');},340);
+}
+
+// Desktop selection
+document.querySelectorAll('.desktop-icon').forEach(ic=>{
+  ic.addEventListener('click',()=>{
+    document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));
+    ic.classList.add('selected');
+  });
+});
+document.getElementById('desktop-icons').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));
+});
 </script>
 
 </body>
