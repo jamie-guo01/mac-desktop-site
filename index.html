@@ -325,6 +325,160 @@
     .desktop-icon.opening .icon-img { animation: bounce .35s ease; }
     .dock-item.opening .dock-icon-wrap { animation: bounce .35s ease; }
     @keyframes bounce { 0%{transform:scale(1)} 30%{transform:scale(.82)} 60%{transform:scale(1.06)} 100%{transform:scale(1)} }
+
+    /* ========== LAUNCHPAD OVERLAY ========== */
+    #launchpad-overlay {
+      position: fixed; inset: 0; z-index: 600;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(40px) saturate(150%);
+      -webkit-backdrop-filter: blur(40px) saturate(150%);
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    #launchpad-overlay.visible { display: flex; opacity: 1; }
+    #launchpad-overlay.fade-in { opacity: 1; }
+    #launchpad-overlay.fade-out { opacity: 0; }
+    .lp-search {
+      width: 240px; height: 34px;
+      background: rgba(255,255,255,0.1);
+      border: 0.5px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      display: flex; align-items: center;
+      padding: 0 10px; gap: 6px;
+      margin-bottom: 48px;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+    .lp-search svg { flex-shrink: 0; opacity: 0.5; }
+    .lp-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 96px);
+      gap: 28px 16px;
+      justify-content: center;
+    }
+    .lp-icon {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      cursor: default;
+      transition: transform .15s;
+    }
+    .lp-icon:hover { transform: scale(1.08); }
+    .lp-icon:active { transform: scale(0.95); }
+    .lp-icon-img {
+      width: 72px; height: 72px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .lp-icon-img img { width: 100%; height: 100%; }
+    .lp-icon-img svg { width: 100%; height: 100%; }
+    .lp-icon-label {
+      font-size: 12px; color: #fff;
+      text-align: center;
+      max-width: 86px;
+      overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .lp-dots {
+      display: flex; gap: 8px;
+      margin-top: 48px;
+    }
+    .lp-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+    .lp-dot.active { background: rgba(255,255,255,0.85); }
+
+    /* ========== FINDER WINDOW ========== */
+    #finder-overlay {
+      position: fixed; inset: 0; z-index: 550;
+      display: none;
+    }
+    #finder-overlay.visible { display: block; }
+    #finder-window {
+      position: absolute;
+      top: 45px; left: 50%; transform: translateX(-50%) scale(0.95);
+      width: 820px; height: calc(100vh - 80px);
+      max-height: 620px;
+      background: rgba(38,38,40,0.95);
+      backdrop-filter: blur(50px) saturate(180%);
+      -webkit-backdrop-filter: blur(50px) saturate(180%);
+      border-radius: 10px;
+      border: 0.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.3);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      transition: transform .25s cubic-bezier(0.16,1,0.3,1), opacity .2s ease;
+    }
+    #finder-overlay.visible #finder-window { transform: translateX(-50%) scale(1); opacity: 1; }
+    #finder-overlay.closing #finder-window { transform: translateX(-50%) scale(0.95); opacity: 0; }
+    .finder-toolbar {
+      height: 52px;
+      background: rgba(48,48,50,0.6);
+      display: flex; align-items: center;
+      padding: 0 14px; gap: 12px;
+      flex-shrink: 0;
+      border-bottom: 0.5px solid rgba(255,255,255,0.06);
+    }
+    .finder-body { display: flex; flex: 1; overflow: hidden; }
+    .finder-sidebar {
+      width: 180px; padding: 10px 0;
+      background: rgba(30,30,32,0.5);
+      border-right: 0.5px solid rgba(255,255,255,0.06);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .finder-sb-label {
+      font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      padding: 8px 18px 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .finder-sb-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 18px; cursor: default;
+      font-size: 13px; color: rgba(255,255,255,0.8);
+      border-radius: 5px; margin: 0 6px;
+    }
+    .finder-sb-item:hover { background: rgba(255,255,255,0.08); }
+    .finder-sb-item.selected { background: rgba(10,132,255,0.35); color: #fff; }
+    .finder-sb-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .finder-main {
+      flex: 1; padding: 12px 16px;
+      display: flex; flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 4px 2px;
+      overflow-y: auto;
+    }
+    .finder-file {
+      width: 88px; padding: 6px 4px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      border-radius: 6px; cursor: default;
+    }
+    .finder-file:hover { background: rgba(255,255,255,0.06); }
+    .finder-file-icon { font-size: 40px; line-height: 1; }
+    .finder-file-name {
+      font-size: 11.5px; color: rgba(255,255,255,0.8);
+      text-align: center; max-width: 80px;
+      overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .finder-path-bar {
+      height: 24px;
+      background: rgba(48,48,50,0.4);
+      border-top: 0.5px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center;
+      padding: 0 14px;
+      font-size: 11px; color: rgba(255,255,255,0.35);
+      gap: 4px; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -484,90 +638,28 @@
   <!-- Dock -->
   <div class="dock-wrapper">
     <div class="dock" id="dock">
-      <!-- Finder: macOS 15 classic two-tone face -->
-      <div class="dock-item running">
+      <!-- Finder -->
+      <div class="dock-item running" onclick="openFinder()">
         <div class="dock-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 120 120">
-            <defs>
-              <clipPath id="sq"><rect width="120" height="120" rx="26"/></clipPath>
-            </defs>
-            <g clip-path="url(#sq)">
-              <!-- Left half: blue -->
-              <rect x="0" y="0" width="60" height="120" fill="#4FC3F7"/>
-              <!-- Right half: purple -->
-              <rect x="60" y="0" width="60" height="120" fill="#7B68EE"/>
-              <!-- Face outline -->
-              <rect x="26" y="16" width="68" height="88" rx="34" fill="none" stroke="#fff" stroke-width="6"/>
-              <!-- Left eye -->
-              <ellipse cx="48" cy="52" rx="4.5" ry="6" fill="#fff"/>
-              <!-- Right eye -->
-              <ellipse cx="72" cy="52" rx="4.5" ry="6" fill="#fff"/>
-              <!-- Nose -->
-              <line x1="60" y1="52" x2="60" y2="70" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
-              <!-- Mouth -->
-              <path d="M44 76 Q60 88 76 76" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
-            </g>
-          </svg>
+          <img src="icons/finder.png" width="48" height="48" style="border-radius:10px;" draggable="false">
         </div>
         <span class="tooltip">Finder</span>
         <span class="dock-dot"></span>
       </div>
 
-      <!-- Safari: macOS 15 compass icon -->
+      <!-- Safari -->
       <div class="dock-item">
         <div class="dock-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 120 120">
-            <defs>
-              <linearGradient id="g-saf" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#56CCF2"/>
-                <stop offset="100%" stop-color="#2F80ED"/>
-              </linearGradient>
-            </defs>
-            <rect width="120" height="120" rx="26" fill="url(#g-saf)"/>
-            <circle cx="60" cy="60" r="36" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
-            <!-- Tick marks around circle -->
-            <g stroke="#fff" stroke-width="1.5" opacity=".5">
-              <line x1="60" y1="22" x2="60" y2="28"/><line x1="60" y1="92" x2="60" y2="98"/>
-              <line x1="22" y1="60" x2="28" y2="60"/><line x1="92" y1="60" x2="98" y2="60"/>
-              <line x1="32.6" y1="32.6" x2="36.8" y2="36.8"/><line x1="83.2" y1="83.2" x2="87.4" y2="87.4"/>
-              <line x1="87.4" y1="32.6" x2="83.2" y2="36.8"/><line x1="36.8" y1="83.2" x2="32.6" y2="87.4"/>
-            </g>
-            <!-- Compass diamond -->
-            <polygon points="60,28 52,58 60,66 68,58" fill="#fff" opacity=".92"/>
-            <polygon points="60,92 68,62 60,54 52,62" fill="#FF3B30" opacity=".88"/>
-            <!-- Center dot -->
-            <circle cx="60" cy="60" r="3" fill="#fff"/>
-          </svg>
+          <img src="icons/safari.png" width="48" height="48" style="border-radius:10px;" draggable="false">
         </div>
         <span class="tooltip">Safari</span>
         <span class="dock-dot"></span>
       </div>
 
       <!-- Launchpad -->
-      <div class="dock-item">
+      <div class="dock-item" onclick="openLaunchpad()">
         <div class="dock-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 120 120">
-            <rect width="120" height="120" rx="26" fill="#1c1c1e"/>
-            <!-- 4x4 rounded squares -->
-            <g>
-              <rect x="18" y="18" rx="5" width="18" height="18" fill="#FF9500"/>
-              <rect x="42" y="18" rx="5" width="18" height="18" fill="#30D158"/>
-              <rect x="66" y="18" rx="5" width="18" height="18" fill="#64D2FF"/>
-              <rect x="90" y="18" rx="5" width="12" height="18" fill="#FF375F"/>
-              <rect x="18" y="42" rx="5" width="18" height="18" fill="#BF5AF2"/>
-              <rect x="42" y="42" rx="5" width="18" height="18" fill="#FF453A"/>
-              <rect x="66" y="42" rx="5" width="18" height="18" fill="#FFD60A"/>
-              <rect x="90" y="42" rx="5" width="12" height="18" fill="#0A84FF"/>
-              <rect x="18" y="66" rx="5" width="18" height="18" fill="#0A84FF"/>
-              <rect x="42" y="66" rx="5" width="18" height="18" fill="#FF9F0A"/>
-              <rect x="66" y="66" rx="5" width="18" height="18" fill="#30D158"/>
-              <rect x="90" y="66" rx="5" width="12" height="18" fill="#AC8E68"/>
-              <rect x="18" y="90" rx="5" width="18" height="12" fill="#FF375F"/>
-              <rect x="42" y="90" rx="5" width="18" height="12" fill="#5E5CE6"/>
-              <rect x="66" y="90" rx="5" width="18" height="12" fill="#64D2FF"/>
-              <rect x="90" y="90" rx="5" width="12" height="12" fill="#FF9500"/>
-            </g>
-          </svg>
+          <img src="icons/launchpad.png" width="48" height="48" style="border-radius:10px;" draggable="false">
         </div>
         <span class="tooltip">Launchpad</span>
         <span class="dock-dot"></span>
@@ -595,24 +687,10 @@
 
       <div class="dock-sep"></div>
 
-      <!-- Trash: macOS 15 wire mesh style -->
+      <!-- Trash -->
       <div class="dock-item">
         <div class="dock-icon-wrap">
-          <svg width="48" height="48" viewBox="0 0 120 120">
-            <rect width="120" height="120" rx="26" fill="none"/>
-            <!-- Trash can body -->
-            <path d="M36 40 L40 98 C40 102 44 106 48 106 L72 106 C76 106 80 102 80 98 L84 40" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="3" stroke-linejoin="round"/>
-            <!-- Lid -->
-            <path d="M30 40 L90 40" stroke="rgba(255,255,255,.7)" stroke-width="3.5" stroke-linecap="round"/>
-            <path d="M50 40 L50 32 C50 28 54 26 58 26 L62 26 C66 26 70 28 70 32 L70 40" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="3" stroke-linecap="round"/>
-            <!-- Grid lines -->
-            <line x1="52" y1="50" x2="52" y2="96" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
-            <line x1="60" y1="48" x2="60" y2="98" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
-            <line x1="68" y1="50" x2="68" y2="96" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
-            <line x1="38" y1="58" x2="82" y2="58" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
-            <line x1="39" y1="74" x2="81" y2="74" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
-            <line x1="40" y1="90" x2="80" y2="90" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
-          </svg>
+          <img src="icons/trash.png" width="48" height="48" draggable="false">
         </div>
         <span class="tooltip">废纸篓</span>
         <span class="dock-dot"></span>
@@ -621,8 +699,140 @@
   </div>
 </div>
 
+<!-- LAUNCHPAD OVERLAY -->
+<div id="launchpad-overlay" onclick="closeLaunchpad(event)">
+  <div class="lp-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>搜索</span>
+  </div>
+  <div class="lp-grid">
+    <div class="lp-icon" data-app="about-me" ondblclick="lpOpenApp(this)">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-ct2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#f0f0f0"/><stop offset="100%" stop-color="#d0d0d0"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-ct2)"/><rect x="6" y="8" width="108" height="104" rx="20" fill="#fff"/><rect x="3" y="0" width="6" height="120" rx="3" fill="#c8c8c8"/><circle cx="60" cy="44" r="16" fill="#b0b8c0"/><path d="M34 90c0-14.4 11.6-24 26-24s26 9.6 26 24" fill="#b0b8c0"/></svg></div>
+      <span class="lp-icon-label">关于我</span>
+    </div>
+    <div class="lp-icon" data-app="vibe-coding" data-url="vibe-coding-guide.html" ondblclick="lpOpenApp(this)">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-vb2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5856D6"/><stop offset="50%" stop-color="#AF52DE"/><stop offset="100%" stop-color="#FF2D55"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-vb2)"/><path d="M60 28L38 68h20l-6 24 28-40H62l6-24z" fill="#fff" opacity=".95"/></svg></div>
+      <span class="lp-icon-label">Vibe Coding</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><img src="icons/safari.png"></div>
+      <span class="lp-icon-label">Safari</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="#1C9CF6"/><path d="M30 42h60v6H30z" fill="#fff" opacity=".9"/><path d="M30 56h60v6H30z" fill="#fff" opacity=".9"/><path d="M30 70h42v6H30z" fill="#fff" opacity=".9"/></svg></div>
+      <span class="lp-icon-label">备忘录</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-msg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#5FE25A"/><stop offset="100%" stop-color="#30D158"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-msg)"/><path d="M28 48c0-10 10-18 32-18s32 8 32 18-10 18-32 18c-4 0-8-.3-11-1l-12 6 4-10c-8-4-13-8-13-13z" fill="#fff"/></svg></div>
+      <span class="lp-icon-label">信息</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-map" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#52D726"/><stop offset="100%" stop-color="#27AE60"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-map)"/><circle cx="60" cy="52" r="16" fill="none" stroke="#fff" stroke-width="4"/><path d="M60 68l-10 20h20z" fill="#fff"/></svg></div>
+      <span class="lp-icon-label">地图</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-pho" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FF9500"/><stop offset="100%" stop-color="#FF7043"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-pho)"/><circle cx="60" cy="60" r="24" fill="none" stroke="#fff" stroke-width="4"/><circle cx="60" cy="60" r="8" fill="#fff"/></svg></div>
+      <span class="lp-icon-label">照片</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="#f5f5f5"/><rect x="18" y="18" width="84" height="84" rx="4" fill="#fff" stroke="#ddd" stroke-width="1.5"/><text x="60" y="42" text-anchor="middle" font-size="14" font-weight="600" fill="#FF3B30">星期三</text><text x="60" y="82" text-anchor="middle" font-size="44" font-weight="300" fill="#1c1c1e">23</text></svg></div>
+      <span class="lp-icon-label">日历</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-mus" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF2D55"/><stop offset="100%" stop-color="#FF6B6B"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-mus)"/><text x="60" y="76" text-anchor="middle" font-size="52" fill="#fff">♫</text></svg></div>
+      <span class="lp-icon-label">音乐</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-set" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#8E8E93"/><stop offset="100%" stop-color="#636366"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-set)"/><circle cx="60" cy="60" r="24" fill="none" stroke="#fff" stroke-width="4"/><g stroke="#fff" stroke-width="6" stroke-linecap="round"><line x1="60" y1="28" x2="60" y2="36"/><line x1="60" y1="84" x2="60" y2="92"/><line x1="28" y1="60" x2="36" y2="60"/><line x1="84" y1="60" x2="92" y2="60"/><line x1="37.4" y1="37.4" x2="43" y2="43"/><line x1="77" y1="77" x2="82.6" y2="82.6"/><line x1="82.6" y1="37.4" x2="77" y2="43"/><line x1="43" y1="77" x2="37.4" y2="82.6"/></g></svg></div>
+      <span class="lp-icon-label">系统设置</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-cal2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#5856D6"/><stop offset="100%" stop-color="#AF52DE"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-cal2)"/><rect x="26" y="30" width="68" height="60" rx="8" fill="#fff" opacity=".9"/><path d="M38 30V22M82 30V22" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <span class="lp-icon-label">提醒事项</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="#007AFF"/><path d="M60 24L36 60h16v36h16V60h16z" fill="#fff" opacity=".9"/></svg></div>
+      <span class="lp-icon-label">App Store</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><img src="icons/finder.png" style="border-radius:16px;"></div>
+      <span class="lp-icon-label">Finder</span>
+    </div>
+    <div class="lp-icon">
+      <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-tv" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#636366"/><stop offset="100%" stop-color="#1c1c1e"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-tv)"/><text x="60" y="72" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">TV</text></svg></div>
+      <span class="lp-icon-label">Apple TV</span>
+    </div>
+  </div>
+  <div class="lp-dots">
+    <div class="lp-dot active"></div>
+    <div class="lp-dot"></div>
+  </div>
+</div>
+
+<!-- FINDER WINDOW -->
+<div id="finder-overlay">
+  <div id="finder-window">
+    <div class="finder-toolbar">
+      <div class="traffic-lights">
+        <div class="tl tl-close" onclick="closeFinder()"></div>
+        <div class="tl tl-min" onclick="closeFinder()"></div>
+        <div class="tl tl-max"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div style="flex:1;text-align:center;font-size:14px;font-weight:500;color:rgba(255,255,255,.85);">最近使用</div>
+    </div>
+    <div class="finder-body">
+      <div class="finder-sidebar">
+        <div class="finder-sb-label">个人收藏</div>
+        <div class="finder-sb-item" onclick="finderNav(this,'AirDrop')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <span>AirDrop</span>
+        </div>
+        <div class="finder-sb-item selected" onclick="finderNav(this,'最近使用')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>最近使用</span>
+        </div>
+        <div class="finder-sb-item" onclick="finderNav(this,'应用程序')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>应用程序</span>
+        </div>
+        <div class="finder-sb-item" onclick="finderNav(this,'桌面')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span>桌面</span>
+        </div>
+        <div class="finder-sb-item" onclick="finderNav(this,'文稿')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <span>文稿</span>
+        </div>
+        <div class="finder-sb-item" onclick="finderNav(this,'下载')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <span>下载</span>
+        </div>
+        <div class="finder-sb-label" style="margin-top:8px;">位置</div>
+        <div class="finder-sb-item" onclick="finderNav(this,'MacBook Pro')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 17h20"/></svg>
+          <span>MacBook Pro</span>
+        </div>
+      </div>
+      <div class="finder-main" id="finder-main">
+        <div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">index.html</div></div>
+        <div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">vibe-coding.html</div></div>
+        <div class="finder-file"><div class="finder-file-icon">🖼️</div><div class="finder-file-name">wallpaper.jpg</div></div>
+        <div class="finder-file"><div class="finder-file-icon">📁</div><div class="finder-file-name">icons</div></div>
+        <div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">readme.md</div></div>
+        <div class="finder-file"><div class="finder-file-icon">📁</div><div class="finder-file-name">.github</div></div>
+      </div>
+    </div>
+    <div class="finder-path-bar">
+      <span>Macintosh HD</span><span>›</span><span>Users</span><span>›</span><span>jamie</span><span>›</span><span>Desktop</span>
+    </div>
+  </div>
+</div>
+
 <!-- SAFARI OVERLAY -->
-<div id="safari-overlay">
   <div id="safari-window">
     <div class="safari-toolbar">
       <div class="traffic-lights">
@@ -742,6 +952,64 @@ function openApp(el){
   el.classList.add('opening');
   const appId=el.getAttribute('data-app');
   setTimeout(()=>{openSafari(appId);el.classList.remove('opening');},340);
+}
+
+// === Launchpad ===
+function openLaunchpad(){
+  const ov=document.getElementById('launchpad-overlay');
+  ov.style.display='flex';
+  requestAnimationFrame(()=>{requestAnimationFrame(()=>{ov.classList.add('visible');});});
+}
+function closeLaunchpad(e){
+  if(e && e.target!==e.currentTarget && !e.target.closest('.lp-dots')) return;
+  const ov=document.getElementById('launchpad-overlay');
+  ov.classList.remove('visible');
+  ov.classList.add('fade-out');
+  setTimeout(()=>{ov.style.display='none';ov.classList.remove('fade-out');},300);
+}
+function lpOpenApp(el){
+  closeLaunchpad({target:document.getElementById('launchpad-overlay'),currentTarget:document.getElementById('launchpad-overlay')});
+  const appId=el.getAttribute('data-app');
+  setTimeout(()=>{openSafari(appId);},320);
+}
+// ESC to close launchpad
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape'){
+    const lp=document.getElementById('launchpad-overlay');
+    if(lp.classList.contains('visible')) closeLaunchpad({target:lp,currentTarget:lp});
+    const fo=document.getElementById('finder-overlay');
+    if(fo.classList.contains('visible')) closeFinder();
+  }
+});
+
+// === Finder ===
+let finderOpen=false;
+function openFinder(){
+  if(finderOpen) return;
+  finderOpen=true;
+  const ov=document.getElementById('finder-overlay');
+  ov.classList.remove('closing');ov.classList.add('visible');
+}
+function closeFinder(){
+  const ov=document.getElementById('finder-overlay');
+  ov.classList.add('closing');
+  setTimeout(()=>{ov.classList.remove('visible','closing');finderOpen=false;},260);
+}
+function finderNav(el,name){
+  document.querySelectorAll('.finder-sb-item').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  document.querySelector('.finder-toolbar div:last-child').textContent=name;
+  const main=document.getElementById('finder-main');
+  const files={
+    'AirDrop':'',
+    '最近使用':'<div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">index.html</div></div><div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">vibe-coding.html</div></div><div class="finder-file"><div class="finder-file-icon">🖼️</div><div class="finder-file-name">wallpaper.jpg</div></div><div class="finder-file"><div class="finder-file-icon">📁</div><div class="finder-file-name">icons</div></div>',
+    '应用程序':'<div class="finder-file"><div class="finder-file-icon">🌐</div><div class="finder-file-name">Safari</div></div><div class="finder-file"><div class="finder-file-icon">📝</div><div class="finder-file-name">备忘录</div></div><div class="finder-file"><div class="finder-file-icon">⚙️</div><div class="finder-file-name">系统设置</div></div><div class="finder-file"><div class="finder-file-icon">🎵</div><div class="finder-file-name">音乐</div></div><div class="finder-file"><div class="finder-file-icon">📸</div><div class="finder-file-name">照片</div></div><div class="finder-file"><div class="finder-file-icon">💬</div><div class="finder-file-name">信息</div></div><div class="finder-file"><div class="finder-file-icon">📧</div><div class="finder-file-name">邮件</div></div><div class="finder-file"><div class="finder-file-icon">📅</div><div class="finder-file-name">日历</div></div>',
+    '桌面':'<div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">index.html</div></div><div class="finder-file"><div class="finder-file-icon">🖼️</div><div class="finder-file-name">wallpaper.jpg</div></div>',
+    '文稿':'<div class="finder-file"><div class="finder-file-icon">📁</div><div class="finder-file-name">项目</div></div><div class="finder-file"><div class="finder-file-icon">📄</div><div class="finder-file-name">笔记.txt</div></div>',
+    '下载':'<div class="finder-file"><div class="finder-file-icon">📦</div><div class="finder-file-name">archive.zip</div></div><div class="finder-file"><div class="finder-file-icon">🖼️</div><div class="finder-file-name">photo.png</div></div>',
+    'MacBook Pro':'<div class="finder-file"><div class="finder-file-icon">💾</div><div class="finder-file-name">Macintosh HD</div></div>'
+  };
+  main.innerHTML=files[name]||'<div style="padding:40px;color:rgba(255,255,255,.3);font-size:13px;width:100%;text-align:center;">此文件夹为空</div>';
 }
 
 // Desktop selection
