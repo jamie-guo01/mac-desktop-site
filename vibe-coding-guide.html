@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设计师 Vibe Coding 工作流</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter','-apple-system','BlinkMacSystemFont','SF Pro Display','SF Pro Text','PingFang SC','system-ui','sans-serif'],
+            mono: ['JetBrains Mono','SF Mono','monospace'],
+          },
+          colors: {
+            apple: {
+              bg: '#FFFFFF',
+              surface: '#F5F5F7',
+              surface2: '#FAFAFA',
+              border: 'rgba(0,0,0,0.08)',
+              border2: 'rgba(0,0,0,0.04)',
+              text: '#1D1D1F',
+              text2: '#6E6E73',
+              text3: '#86868B',
+              text4: '#AEAEB2',
+              blue: '#0071E3',
+              blueHover: '#0077ED',
+              blueBg: 'rgba(0,113,227,0.06)',
+              blueBorder: 'rgba(0,113,227,0.12)',
+              green: '#34C759',
+              orange: '#FF9500',
+              red: '#FF3B30',
+              purple: '#AF52DE',
+            }
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    html { background: #FFFFFF; scroll-behavior: smooth; }
+    body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; color: #1D1D1F; }
+
+    /* Code blocks — Apple dark style */
+    .code-block { background: #1D1D1F; border-radius: 12px; border: none; }
+    .code-block code { color: #F5F5F7; font-size: 13px; }
+    .code-keyword { color: #FF79C6; }
+    .code-string { color: #50FA7B; }
+    .code-comment { color: #6272A4; }
+    .code-type { color: #8BE9FD; }
+
+    /* Sidebar */
+    .sidebar-link { transition: all .2s ease; border-left: 2px solid transparent; color: #86868B; }
+    .sidebar-link:hover { color: #1D1D1F; background: rgba(0,0,0,0.03); border-left-color: rgba(0,0,0,0.15); }
+    .sidebar-link.active { color: #0071E3; border-left-color: #0071E3; font-weight: 600; }
+    .sidebar-link.sub { padding-left: 1.75rem; font-size: .8125rem; }
+
+    /* Cards */
+    .prompt-card { transition: all .3s cubic-bezier(.4,0,.2,1); border: 1px solid rgba(0,0,0,0.06); background: #FAFAFA; border-radius: 16px; }
+    .prompt-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); }
+    .prompt-masonry { display: flex; flex-direction: column; gap: 1.25rem; }
+    .prompt-item { width: 100%; margin: 0; }
+
+    /* Golden rule — Apple yellow tint */
+    .golden-rule { background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid rgba(245,158,11,0.2); border-radius: 16px; }
+
+    /* Details marker */
+    details summary::-webkit-details-marker { display: none; }
+    details summary { list-style: none; cursor: pointer; }
+
+    /* Phase badge */
+    .phase-badge { font-family: 'Inter','JetBrains Mono', monospace; font-size: 11px; letter-spacing: .08em; font-weight: 600; }
+
+    /* Focus states */
+    a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(0,113,227,0.4); outline-offset: 2px; border-radius: .75rem;
+    }
+
+    /* Back to top */
+    .back-to-top-btn {
+      position: fixed; right: 1.5rem; bottom: 1.5rem; width: 2.75rem; height: 2.75rem;
+      border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.85); backdrop-filter: blur(20px) saturate(180%);
+      color: #1D1D1F; border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      opacity: 0; visibility: hidden; transform: translateY(8px);
+      transition: all .3s cubic-bezier(.4,0,.2,1); z-index: 50;
+    }
+    .back-to-top-btn:hover { background: #0071E3; color: #FFFFFF; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,113,227,0.2); }
+    .back-to-top-btn.show { opacity: 1; visibility: visible; transform: translateY(0); }
+
+    /* Apple-style card */
+    .apple-card {
+      background: #FAFAFA; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    .apple-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.1); }
+
+    /* Section divider line */
+    .step-line { border-left: 2px solid rgba(0,0,0,0.06); }
+
+    /* Checkbox */
+    input[type="checkbox"] { accent-color: #0071E3; }
+
+    /* Responsive */
+    @media(max-width:1024px) { .sidebar-nav { display: none!important; } .main-content { margin-left: 0!important; } }
+    @media(max-width:640px) { .back-to-top-btn { right: 1rem; bottom: 1rem; } }
+
+    /* Smooth section transitions */
+    section { animation: fadeInUp .5s ease both; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<!-- NAV — Apple frosted glass -->
+<nav class="fixed top-0 inset-x-0 z-50" style="background:rgba(255,255,255,0.72);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(0,0,0,0.06);">
+  <div class="max-w-screen-xl mx-auto px-6 h-12 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center overflow-hidden" style="background:#1D1D1F;">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="#1D1D1F"/><text x="14" y="19" text-anchor="middle" fill="#FFFFFF" font-size="14" font-weight="700" font-family="Inter,SF Pro Display,sans-serif">V</text></svg>
+      </div>
+      <span class="text-sm font-semibold text-apple-text tracking-tight">Vibe Coding 工作指南</span>
+    </a>
+    <div class="flex items-center gap-1">
+      <div class="hidden md:flex items-center gap-0">
+        <a href="#overview" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">总览</a>
+        <a href="#phase-1" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">准备</a>
+        <a href="#phase-2" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">开发</a>
+        <a href="#phase-3" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">交付</a>
+        <a href="#prompts" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">Prompt</a>
+        <a href="#rollout" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">推进</a>
+        <a href="#faq" class="px-3 py-1.5 text-xs font-medium text-apple-text3 hover:text-apple-text rounded-full hover:bg-black/[0.03] transition-all">FAQ</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar-nav fixed top-12 left-0 w-56 h-[calc(100vh-3rem)] overflow-y-auto py-8 px-4 z-40" style="border-right:1px solid rgba(0,0,0,0.04);">
+  <nav class="space-y-0.5" id="sidebar">
+    <a href="#hero" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">介绍</a>
+    <a href="#overview" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">三阶段总览</a>
+    <div class="pt-4 pb-1.5 px-3"><span class="text-[10px] font-semibold text-apple-text4 uppercase tracking-[0.12em]">Phase 1</span></div>
+    <a href="#phase-1" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">准备阶段</a>
+    <a href="#step-1-1" class="sidebar-link sub block py-1 rounded-lg">确认需求</a>
+    <a href="#step-1-2" class="sidebar-link sub block py-1 rounded-lg">环境配置</a>
+    <a href="#step-1-3" class="sidebar-link sub block py-1 rounded-lg">CLAUDE.md</a>
+    <a href="#step-1-4" class="sidebar-link sub block py-1 rounded-lg">启动项目 &amp; 预览</a>
+    <div class="pt-4 pb-1.5 px-3"><span class="text-[10px] font-semibold text-apple-text4 uppercase tracking-[0.12em]">Phase 2</span></div>
+    <a href="#phase-2" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">开发阶段</a>
+    <a href="#step-2-1" class="sidebar-link sub block py-1 rounded-lg">PRD 与方案</a>
+    <a href="#step-2-2" class="sidebar-link sub block py-1 rounded-lg">Mock 数据</a>
+    <a href="#step-2-3" class="sidebar-link sub block py-1 rounded-lg">静态 UI 开发</a>
+    <a href="#step-2-4" class="sidebar-link sub block py-1 rounded-lg">交互打磨</a>
+    <a href="#step-2-5" class="sidebar-link sub block py-1 rounded-lg">逻辑占位</a>
+    <div class="pt-4 pb-1.5 px-3"><span class="text-[10px] font-semibold text-apple-text4 uppercase tracking-[0.12em]">Phase 3</span></div>
+    <a href="#phase-3" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">交付阶段</a>
+    <a href="#step-3-1" class="sidebar-link sub block py-1 rounded-lg">推送前检查</a>
+    <a href="#step-3-2" class="sidebar-link sub block py-1 rounded-lg">推送分支</a>
+    <a href="#step-3-3" class="sidebar-link sub block py-1 rounded-lg">交付文档</a>
+    <a href="#step-3-4" class="sidebar-link sub block py-1 rounded-lg">建立信任</a>
+    <div class="pt-4 pb-1.5 px-3"><span class="text-[10px] font-semibold text-apple-text4 uppercase tracking-[0.12em]">资源</span></div>
+    <a href="#prompts" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">Prompt 模板库</a>
+    <div class="pt-4 pb-1.5 px-3"><span class="text-[10px] font-semibold text-apple-text4 uppercase tracking-[0.12em]">实战</span></div>
+    <a href="#rollout" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">公司内推进</a>
+    <a href="#rollout-1" class="sidebar-link sub block py-1 rounded-lg">找低风险试验项目</a>
+    <a href="#rollout-2" class="sidebar-link sub block py-1 rounded-lg">和一个开发建立盟友关系</a>
+    <a href="#rollout-3" class="sidebar-link sub block py-1 rounded-lg">量化价值</a>
+    <div class="pt-4 pb-1.5 px-3"><span class="text-[10px] font-semibold text-apple-text4 uppercase tracking-[0.12em]">附录</span></div>
+    <a href="#faq" class="sidebar-link block px-3 py-1.5 text-sm rounded-lg">常见问题</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content ml-56 pt-12">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-12">
+
+<!-- HERO -->
+<section id="hero" class="pt-24 pb-20 scroll-mt-20">
+  <div class="mb-6">
+    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium text-apple-blue" style="background:rgba(0,113,227,0.06);border:1px solid rgba(0,113,227,0.1);">
+      <i data-lucide="pen-tool" class="w-3 h-3"></i>
+      适用于 UI/UX 设计师
+    </span>
+  </div>
+  <h1 class="text-5xl font-bold text-apple-text leading-[1.1] tracking-tight mb-6" style="letter-spacing:-0.03em;">
+    设计师的 Vibe Coding<br>完整工作流
+  </h1>
+  <p class="text-lg text-apple-text2 leading-relaxed mb-10" style="line-height:1.7;max-width:56ch;">
+    设计师不需要学会"写代码"，而是学会"指挥 AI 写代码"。这份指南将帮助你从零建立一套<strong class="text-apple-text font-medium">可复用、可交付</strong>的 AI 辅助开发工作流。
+  </p>
+  <div class="flex flex-wrap gap-3 mb-12">
+    <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm text-apple-text2" style="background:#F5F5F7;border:1px solid rgba(0,0,0,0.04);">
+      <i data-lucide="check" class="w-3.5 h-3.5 text-apple-blue"></i> 独立完成前端 UI 开发并交付
+    </div>
+    <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm text-apple-text2" style="background:#F5F5F7;border:1px solid rgba(0,0,0,0.04);">
+      <i data-lucide="check" class="w-3.5 h-3.5 text-apple-blue"></i> 设计到开发交付周期缩短 50%
+    </div>
+    <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm text-apple-text2" style="background:#F5F5F7;border:1px solid rgba(0,0,0,0.04);">
+      <i data-lucide="check" class="w-3.5 h-3.5 text-apple-blue"></i> 和开发建立高效协作模式
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-3">
+    <a href="#overview" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-apple-blue text-white text-sm font-medium hover:bg-apple-blueHover transition-colors" style="box-shadow:0 2px 8px rgba(0,113,227,0.2);">
+      开始阅读 <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>
+    </a>
+    <a href="#prompts" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-apple-blue text-sm font-medium hover:bg-apple-blueBg transition-colors" style="border:1px solid rgba(0,113,227,0.2);">
+      直接看 Prompt 模板 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+    </a>
+  </div>
+</section>
+
+<!-- GOLDEN RULE -->
+<section class="mb-14">
+  <div class="golden-rule px-6 py-5 flex items-start gap-4">
+    <i data-lucide="triangle-alert" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+    <div>
+      <div class="font-semibold text-amber-900 mb-1 text-sm">黄金原则</div>
+      <p class="text-amber-800 text-sm leading-relaxed" style="line-height:1.65;">
+        UI/UX 设计开发阶段<strong>只用 Mock 数据，不碰业务逻辑</strong>。UI 与业务逻辑分离，设计师负责前端界面和交互，开发负责接口和业务。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- WHEN TO USE -->
+<section class="mb-20">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="apple-card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="font-semibold text-apple-text text-sm">适合使用的场景</h3>
+      </div>
+      <ul class="space-y-3 text-sm text-apple-text2">
+        <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-3.5 h-3.5 text-apple-green mt-0.5 flex-shrink-0"></i>有明确设计稿的 UI 开发（新页面、新组件、改版）</li>
+        <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-3.5 h-3.5 text-apple-green mt-0.5 flex-shrink-0"></i>确定性高的需求，交互和视觉已经定稿</li>
+        <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-3.5 h-3.5 text-apple-green mt-0.5 flex-shrink-0"></i>团队愿意接受设计师提交的前端代码</li>
+      </ul>
+    </div>
+    <div class="apple-card p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="font-semibold text-apple-text text-sm">不适合的场景</h3>
+      </div>
+      <ul class="space-y-3 text-sm text-apple-text2">
+        <li class="flex items-start gap-2.5"><i data-lucide="x" class="w-3.5 h-3.5 text-apple-text4 mt-0.5 flex-shrink-0"></i>探索性原型或概念验证（需求还没定）</li>
+        <li class="flex items-start gap-2.5"><i data-lucide="x" class="w-3.5 h-3.5 text-apple-text4 mt-0.5 flex-shrink-0"></i>需要深度业务逻辑的功能模块</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview" class="mb-24 scroll-mt-20">
+  <div class="mb-10">
+    <p class="phase-badge text-apple-text3 uppercase tracking-widest mb-2">Workflow Overview</p>
+    <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">三阶段工作流总览</h2>
+  </div>
+  <div class="grid md:grid-cols-3 gap-4">
+    <a href="#phase-1" class="group apple-card block p-6 hover:border-apple-blue/20">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-xl bg-apple-surface flex items-center justify-center text-apple-text3 text-sm font-bold font-mono group-hover:bg-apple-blue group-hover:text-white transition-all duration-300">1</div>
+        <h3 class="font-semibold text-apple-text">准备</h3>
+      </div>
+      <div class="text-sm text-apple-text3 leading-relaxed space-y-1.5">
+        <p>确认需求范围与负责模块</p>
+        <p>获取前端工程 + 配置环境</p>
+        <p>建立 CLAUDE.md 项目约定</p>
+      </div>
+    </a>
+    <a href="#phase-2" class="group apple-card block p-6 hover:border-apple-blue/20">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-xl bg-apple-surface flex items-center justify-center text-apple-text3 text-sm font-bold font-mono group-hover:bg-apple-blue group-hover:text-white transition-all duration-300">2</div>
+        <h3 class="font-semibold text-apple-text">开发</h3>
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">核心</span>
+      </div>
+      <div class="text-sm text-apple-text3 leading-relaxed space-y-1.5">
+        <p>AI 生成 PRD + 技术方案</p>
+        <p>准备 Mock 数据 + 静态 UI 开发</p>
+        <p>交互打磨 + 业务逻辑 TODO 占位</p>
+      </div>
+    </a>
+    <a href="#phase-3" class="group apple-card block p-6 hover:border-apple-blue/20">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-9 h-9 rounded-xl bg-apple-surface flex items-center justify-center text-apple-text3 text-sm font-bold font-mono group-hover:bg-apple-blue group-hover:text-white transition-all duration-300">3</div>
+        <h3 class="font-semibold text-apple-text">交付</h3>
+      </div>
+      <div class="text-sm text-apple-text3 leading-relaxed space-y-1.5">
+        <p>推送前自检 + 推送独立分支</p>
+        <p>撰写交付文档</p>
+        <p>开发 Review &rarr; 接口对接 &rarr; 上线</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ==================== PHASE 1 ==================== -->
+<section id="phase-1" class="mb-24 scroll-mt-20">
+  <div class="flex items-center gap-4 mb-12">
+    <div class="w-11 h-11 rounded-2xl bg-apple-text flex items-center justify-center text-white font-bold font-mono text-lg">1</div>
+    <div>
+      <p class="phase-badge text-apple-text3 uppercase tracking-widest">Phase 1</p>
+      <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">准备阶段</h2>
+    </div>
+  </div>
+
+  <div class="space-y-12">
+    <!-- 1-1 -->
+    <div id="step-1-1" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="clipboard-check" class="w-4 h-4 text-apple-blue"></i>
+        1-1 先理解业务，再动手实现
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">拿到需求后，先做这三件事再开始：</p>
+      <div class="space-y-2">
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">先读懂产品文档（PRD），明确业务目标、核心流程和边界条件</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">找开发确认技术栈（React？Vue？用什么组件库？）</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">确认哪些页面 / 模块是你负责的范围</span>
+        </label>
+      </div>
+      <div class="mt-4 flex items-start gap-2.5 text-sm text-apple-text2 bg-apple-surface rounded-xl p-4" style="border:1px solid rgba(0,0,0,0.04);">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-apple-blue flex-shrink-0 mt-0.5"></i>
+        <span>把不确定的地方先记下来，后面让 AI 帮你分析，不要自己猜。</span>
+      </div>
+    </div>
+
+    <!-- 1-2 -->
+    <div id="step-1-2" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="settings" class="w-4 h-4 text-apple-blue"></i>
+        1-2 环境配置（仅首次需要）
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">需要安装的东西（找开发帮你或参考团队文档）：</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="apple-card p-4 text-center">
+          <i data-lucide="box" class="w-5 h-5 text-apple-blue mx-auto mb-2"></i>
+          <div class="text-xs font-semibold text-apple-text">Node.js</div>
+          <div class="text-[11px] text-apple-text3 mt-0.5">运行环境</div>
+        </div>
+        <div class="apple-card p-4 text-center">
+          <i data-lucide="folder-git-2" class="w-5 h-5 text-apple-purple mx-auto mb-2"></i>
+          <div class="text-xs font-semibold text-apple-text">代码仓库</div>
+          <div class="text-[11px] text-apple-text3 mt-0.5">clone 到本地</div>
+        </div>
+        <div class="apple-card p-4 text-center">
+          <i data-lucide="bot" class="w-5 h-5 text-apple-green mx-auto mb-2"></i>
+          <div class="text-xs font-semibold text-apple-text">Claude Code</div>
+          <div class="text-[11px] text-apple-text3 mt-0.5">AI 编码助手</div>
+        </div>
+        <div class="apple-card p-4 text-center">
+          <i data-lucide="code-2" class="w-5 h-5 text-apple-orange mx-auto mb-2"></i>
+          <div class="text-xs font-semibold text-apple-text">Cursor / VSCode</div>
+          <div class="text-[11px] text-apple-text3 mt-0.5">代码编辑器</div>
+        </div>
+      </div>
+      <div class="mt-4 flex items-start gap-2.5 text-sm text-apple-text2 bg-apple-surface rounded-xl p-4" style="border:1px solid rgba(0,0,0,0.04);">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-apple-blue flex-shrink-0 mt-0.5"></i>
+        <span>让开发给你一份《本地环境配置教程》，照着走一遍，记录遇到的问题。</span>
+      </div>
+    </div>
+
+    <!-- 1-3 -->
+    <div id="step-1-3" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="file-text" class="w-4 h-4 text-apple-blue"></i>
+        1-3 建立 CLAUDE.md 项目上下文文件
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">在项目根目录创建 <code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-apple-text text-sm font-mono" style="border:1px solid rgba(0,0,0,0.06);">CLAUDE.md</code> 文件——这是你和 AI 的"约定书"：</p>
+      <div class="code-block p-5 overflow-x-auto mb-4">
+        <pre class="text-sm font-mono leading-relaxed"><code><span class="code-comment"># 项目说明</span>
+
+<span class="code-keyword">## 技术栈</span>
+- 框架：React 18 + TypeScript
+- 样式：Tailwind CSS
+- 组件库：shadcn/ui
+- 包管理：pnpm
+
+<span class="code-keyword">## 文件结构</span>
+- 页面文件放在 <span class="code-string">src/pages/</span>
+- 组件文件放在 <span class="code-string">src/components/</span>
+- Mock 数据放在 <span class="code-string">src/mock/</span>
+
+<span class="code-keyword">## 开发约定</span>
+- 所有 Mock 数据必须有 TypeScript 类型定义
+- 业务逻辑用 TODO 注释占位，不自行实现
+- 不修改 src/api/ 目录下的任何文件
+
+<span class="code-keyword">## 禁止事项</span>
+<span class="code-comment">- 不调用真实 API</span>
+<span class="code-comment">- 不修改路由配置文件</span>
+<span class="code-comment">- 不改动已有业务组件</span></code></pre>
+      </div>
+      <div class="flex items-start gap-2.5 text-sm text-apple-text2 rounded-xl p-4" style="background:rgba(255,149,0,0.05);border:1px solid rgba(255,149,0,0.12);">
+        <i data-lucide="triangle-alert" class="w-4 h-4 text-apple-orange flex-shrink-0 mt-0.5"></i>
+        <span><strong class="text-apple-text font-medium">为什么重要：</strong>AI 在长时间对话中会"忘记"你早期说的规范，写在文件里它每次都会重新读取，相当于一份永不过期的指令。</span>
+      </div>
+    </div>
+
+    <!-- 1-4 -->
+    <div id="step-1-4" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="play" class="w-4 h-4 text-apple-blue"></i>
+        1-4 启动项目 &amp; 预览效果
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">环境装好后，先把项目跑起来。后续开发阶段的<strong class="text-apple-text font-medium">每一次修改</strong>都需要在浏览器里看效果，这是最基本的操作循环。</p>
+
+      <p class="text-sm font-medium text-apple-text mb-3">启动项目三步走</p>
+      <div class="code-block p-5 overflow-x-auto mb-4">
+        <pre class="text-sm font-mono leading-loose"><code><span class="code-comment"># ① 在编辑器中打开终端（Cursor / VSCode 底部的 Terminal 面板）</span>
+<span class="code-comment"># 快捷键：⌃` (Control + 反引号)</span>
+
+<span class="code-comment"># ② 安装项目依赖（仅首次 clone 后需要执行一次）</span>
+npm install
+<span class="code-comment"># 如果团队用 pnpm，则用：pnpm install</span>
+
+<span class="code-comment"># ③ 启动开发服务器</span>
+npm run dev</code></pre>
+      </div>
+
+      <p class="text-sm font-medium text-apple-text mb-3">看到这样的输出就说明成功了</p>
+      <div class="code-block p-4 overflow-x-auto mb-4">
+        <pre class="text-sm font-mono leading-relaxed"><code><span class="code-string">  VITE v5.x.x  ready in 320 ms</span>
+
+  ➜  Local:   <span class="code-type">http://localhost:5173/</span>
+  ➜  Network: <span class="code-comment">use --host to expose</span></code></pre>
+      </div>
+      <p class="text-sm text-apple-text2 mb-5">按住 <code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-apple-text text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">⌘ Cmd</code> 点击终端里的链接，浏览器会自动打开页面。</p>
+
+      <p class="text-sm font-medium text-apple-text mb-3">开发循环：修改 → 保存 → 自动刷新</p>
+      <div class="grid md:grid-cols-3 gap-3 mb-4">
+        <div class="apple-card p-4 text-sm text-center">
+          <i data-lucide="pencil" class="w-5 h-5 text-apple-blue mx-auto mb-2"></i>
+          <div class="font-medium text-apple-text mb-0.5">AI 修改代码</div>
+          <div class="text-apple-text3 text-xs">在编辑器中编辑文件</div>
+        </div>
+        <div class="apple-card p-4 text-sm text-center">
+          <i data-lucide="save" class="w-5 h-5 text-apple-green mx-auto mb-2"></i>
+          <div class="font-medium text-apple-text mb-0.5">保存文件</div>
+          <div class="text-apple-text3 text-xs">⌘S 保存（通常自动保存）</div>
+        </div>
+        <div class="apple-card p-4 text-sm text-center">
+          <i data-lucide="eye" class="w-5 h-5 text-apple-purple mx-auto mb-2"></i>
+          <div class="font-medium text-apple-text mb-0.5">浏览器自动刷新</div>
+          <div class="text-apple-text3 text-xs">切到浏览器即可看到最新效果</div>
+        </div>
+      </div>
+      <div class="flex items-start gap-2.5 text-sm text-apple-text2 bg-apple-surface rounded-xl p-4 mb-5" style="border:1px solid rgba(0,0,0,0.04);">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-apple-blue flex-shrink-0 mt-0.5"></i>
+        <span>现代前端项目都支持<strong class="text-apple-text font-medium">热更新（Hot Reload）</strong>——代码一保存，浏览器会自动刷新页面显示最新效果，不需要手动刷新。这就是你在开发阶段反复调整 UI 的基本操作循环。</span>
+      </div>
+
+      <p class="text-sm font-medium text-apple-text mb-3">启动遇到问题？</p>
+      <div class="space-y-2">
+        <div class="apple-card p-3.5 text-sm">
+          <div class="font-medium text-apple-text mb-1">报错 <code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">command not found: npm</code></div>
+          <div class="text-apple-text3 text-xs">&rarr; Node.js 没装好，回到 1-2 重新安装</div>
+        </div>
+        <div class="apple-card p-3.5 text-sm">
+          <div class="font-medium text-apple-text mb-1">报错 <code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">EACCES permission denied</code> 或依赖安装失败</div>
+          <div class="text-apple-text3 text-xs">&rarr; 把完整报错信息复制给 AI，说"帮我解决这个报错"</div>
+        </div>
+        <div class="apple-card p-3.5 text-sm">
+          <div class="font-medium text-apple-text mb-1">端口被占用 <code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">Port 3000 is already in use</code></div>
+          <div class="text-apple-text3 text-xs">&rarr; 关掉之前的终端窗口重新启动，或让 AI 帮你换个端口</div>
+        </div>
+      </div>
+      <div class="mt-4 flex items-start gap-2.5 text-sm text-apple-text2 rounded-xl p-4" style="background:rgba(255,149,0,0.05);border:1px solid rgba(255,149,0,0.12);">
+        <i data-lucide="triangle-alert" class="w-4 h-4 text-apple-orange flex-shrink-0 mt-0.5"></i>
+        <span><strong class="text-apple-text font-medium">重要：</strong>开发服务器启动后<strong>不要关闭终端窗口</strong>，它需要一直运行。如果不小心关了，重新执行 <code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-apple-text text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">npm run dev</code> 即可。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PHASE 2 ==================== -->
+<section id="phase-2" class="mb-24 scroll-mt-20">
+  <div class="flex items-center gap-4 mb-12">
+    <div class="w-11 h-11 rounded-2xl bg-apple-text flex items-center justify-center text-white font-bold font-mono text-lg">2</div>
+    <div>
+      <p class="phase-badge text-apple-text3 uppercase tracking-widest">Phase 2 · 核心阶段</p>
+      <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">开发阶段</h2>
+    </div>
+  </div>
+
+  <div class="space-y-12">
+    <!-- 2-1 -->
+    <div id="step-2-1" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="file-search" class="w-4 h-4 text-apple-blue"></i>
+        2-1 让 AI 写 PRD 和技术方案
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4"><strong class="text-apple-text font-medium">不要上来就让 AI 写代码</strong>，先让它理清思路：</p>
+      <div class="code-block p-5 overflow-x-auto mb-4">
+        <pre class="text-sm font-mono leading-relaxed"><code>我是一个 UI/UX 设计师，我要开发一个<span class="code-string">[模块名称]</span>页面。
+
+设计稿描述：
+- <span class="code-string">[描述页面主要内容]</span>
+- <span class="code-string">[描述主要交互：如筛选、分页、弹窗]</span>
+- <span class="code-string">[描述数据展示：如列表、卡片、图表]</span>
+
+请帮我：
+<span class="code-type">1.</span> 整理这个页面的功能点清单（PRD）
+<span class="code-type">2.</span> 分析需要哪些组件
+<span class="code-type">3.</span> 规划开发顺序（从简单到复杂）
+<span class="code-type">4.</span> 列出需要 Mock 的数据结构
+
+注意：这个阶段只做静态 UI，不涉及真实接口。</code></pre>
+      </div>
+      <p class="text-sm text-apple-text2">拿到方案后，<strong class="text-apple-text font-medium">确认没有遗漏</strong>再进入开发。</p>
+    </div>
+
+    <!-- 2-2 -->
+    <div id="step-2-2" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="database" class="w-4 h-4 text-apple-blue"></i>
+        2-2 准备 Mock 数据
+        <span class="phase-badge text-apple-orange px-2 py-0.5 rounded-full" style="background:rgba(255,149,0,0.08);">关键步骤</span>
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">在写任何 UI 之前，先让 AI 生成 Mock 数据：</p>
+      <div class="code-block p-5 overflow-x-auto mb-4">
+        <pre class="text-sm font-mono leading-relaxed"><code>根据上面的功能分析，请帮我生成这个页面需要的 Mock 数据。
+
+要求：
+<span class="code-type">1.</span> 用 TypeScript 定义类型（interface）
+<span class="code-type">2.</span> 生成 10 条以上的测试数据，数据要多样化
+<span class="code-type">3.</span> 包含边界情况（超长文字、空值、特殊字符）
+<span class="code-type">4.</span> 文件放在 <span class="code-string">src/mock/[模块名].ts</span></code></pre>
+      </div>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="apple-card p-4 text-sm">
+          <div class="font-medium text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="database" class="w-3.5 h-3.5 text-apple-blue"></i> 贴近真实接口</div>
+          <div class="text-apple-text3 text-xs">后期替换时改动量小</div>
+        </div>
+        <div class="apple-card p-4 text-sm">
+          <div class="font-medium text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="shuffle" class="w-3.5 h-3.5 text-apple-purple"></i> 多样化数据</div>
+          <div class="text-apple-text3 text-xs">避免测试数据千篇一律</div>
+        </div>
+        <div class="apple-card p-4 text-sm">
+          <div class="font-medium text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="shield-alert" class="w-3.5 h-3.5 text-apple-orange"></i> 包含边界情况</div>
+          <div class="text-apple-text3 text-xs">提前暴露 UI 布局问题</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-3 -->
+    <div id="step-2-3" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="layout" class="w-4 h-4 text-apple-blue"></i>
+        2-3 静态 UI 开发
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">推荐<strong class="text-apple-text font-medium">从大到小、从框架到细节</strong>的顺序：</p>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="apple-card p-5">
+          <div class="phase-badge text-apple-blue mb-2">第一轮</div>
+          <div class="font-semibold text-apple-text mb-1 text-sm">搭框架</div>
+          <p class="text-xs text-apple-text3 leading-relaxed">实现整体布局，用 Mock 数据填充，先不加交互</p>
+        </div>
+        <div class="apple-card p-5">
+          <div class="phase-badge text-apple-purple mb-2">第二轮</div>
+          <div class="font-semibold text-apple-text mb-1 text-sm">补组件</div>
+          <p class="text-xs text-apple-text3 leading-relaxed">逐个实现具体组件：筛选栏、数据表格、弹窗等</p>
+        </div>
+        <div class="apple-card p-5">
+          <div class="phase-badge text-apple-green mb-2">第三轮</div>
+          <div class="font-semibold text-apple-text mb-1 text-sm">加交互</div>
+          <p class="text-xs text-apple-text3 leading-relaxed">展开/折叠、筛选、动画，数据变化仍在 Mock 范围内</p>
+        </div>
+      </div>
+      <div class="mt-4 flex items-start gap-2.5 text-sm text-apple-text2 bg-apple-surface rounded-xl p-4" style="border:1px solid rgba(0,0,0,0.04);">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-apple-blue flex-shrink-0 mt-0.5"></i>
+        <span>每完成一个小功能就在浏览器里看效果，不要等全部写完再看。</span>
+      </div>
+      <div class="mt-4 code-block p-5 overflow-x-auto">
+        <p class="text-xs text-gray-400 mb-2 flex items-center gap-1.5"><i data-lucide="message-square" class="w-3 h-3"></i> Prompt 示例 — 第一轮搭框架</p>
+        <pre class="text-sm font-mono leading-relaxed"><code>请根据设计稿实现 <span class="code-string">[页面名]</span> 的整体布局：
+<span class="code-type">1.</span> 左侧 240px 侧边栏 + 右侧内容区
+<span class="code-type">2.</span> 顶部搜索栏 + 筛选区域
+<span class="code-type">3.</span> 主体是一个数据列表（用 Mock 数据填充 5 条）
+<span class="code-type">4.</span> 先不做交互，只做静态布局
+技术栈：<span class="code-string">[React/Vue + 组件库]</span></code></pre>
+      </div>
+    </div>
+
+    <!-- 2-4 -->
+    <div id="step-2-4" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-apple-blue"></i>
+        2-4 交互打磨
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">视觉和交互都完成后，让 AI 做自检：</p>
+      <div class="code-block p-5 overflow-x-auto mb-4">
+        <pre class="text-sm font-mono leading-relaxed"><code>请检查当前代码，找出以下问题并修复：
+<span class="code-type">1.</span> 是否有硬编码的字符串（应该用变量）
+<span class="code-type">2.</span> 是否有 console.log 未清理
+<span class="code-type">3.</span> 是否有未处理的 TODO
+<span class="code-type">4.</span> 响应式布局是否有问题（移动端/宽屏）
+<span class="code-type">5.</span> 是否有明显的性能问题（如列表没有 key）</code></pre>
+      </div>
+      <p class="text-sm font-medium text-apple-text mb-3">同时做极端情况测试：</p>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div class="apple-card p-3.5 text-xs text-apple-text2">Mock 数据改成<strong class="text-apple-text font-medium">空数组</strong>，看空状态处理</div>
+        <div class="apple-card p-3.5 text-xs text-apple-text2">文字改成<strong class="text-apple-text font-medium">超长字符串</strong>，看是否溢出</div>
+        <div class="apple-card p-3.5 text-xs text-apple-text2">数字改成 <strong class="text-apple-text font-medium">0 或负数</strong>，看显示异常</div>
+      </div>
+    </div>
+
+    <!-- 2-5 -->
+    <div id="step-2-5" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="bookmark" class="w-4 h-4 text-apple-blue"></i>
+        2-5 业务逻辑占位
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">UI 完成后，主动标记所有需要接入真实逻辑的地方：</p>
+      <div class="code-block p-5 overflow-x-auto">
+        <pre class="text-sm font-mono leading-relaxed"><code><span class="code-comment">// TODO: 获取用户列表 - 需要调用 getUserList 接口</span>
+<span class="code-comment">// 当前：使用 Mock 数据</span>
+<span class="code-comment">// 替换为：调用 src/api/user.ts 中的 getUserList 方法</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PHASE 3 ==================== -->
+<section id="phase-3" class="mb-24 scroll-mt-20">
+  <div class="flex items-center gap-4 mb-12">
+    <div class="w-11 h-11 rounded-2xl bg-apple-text flex items-center justify-center text-white font-bold font-mono text-lg">3</div>
+    <div>
+      <p class="phase-badge text-apple-text3 uppercase tracking-widest">Phase 3</p>
+      <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">交付阶段</h2>
+    </div>
+  </div>
+
+  <div class="space-y-12">
+    <!-- 3-1 -->
+    <div id="step-3-1" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="list-checks" class="w-4 h-4 text-apple-blue"></i>
+        3-1 推送前 Checklist
+      </h3>
+      <div class="space-y-2">
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">浏览器无报错</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">所有交互功能正常</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">代码中无 console.log</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">所有 TODO 注释已添加</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">Mock 数据有类型定义</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">文件命名符合项目规范</span>
+        </label>
+        <label class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm cursor-pointer" style="border:1px solid rgba(0,0,0,0.04);">
+          <input type="checkbox" class="mt-0.5 rounded">
+          <span class="text-apple-text">没有修改禁止修改的文件</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 3-2 -->
+    <div id="step-3-2" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="git-branch" class="w-4 h-4 text-apple-blue"></i>
+        3-2 推送独立分支
+      </h3>
+      <p class="text-sm text-apple-text2 mb-3">每个功能 / 页面开独立分支，命名建议：</p>
+      <div class="code-block p-4 overflow-x-auto">
+        <pre class="text-sm font-mono"><code>feat/<span class="code-string">[你的名字缩写]</span>-<span class="code-string">[功能名]</span>-ui
+
+<span class="code-comment">例如：feat/hsf-seo-audit-ui</span></code></pre>
+      </div>
+      <div class="mt-4 apple-card p-5">
+        <p class="phase-badge text-apple-text3 uppercase tracking-widest mb-3">Git 速查 — 设计师常用命令</p>
+        <div class="code-block rounded-lg p-3 overflow-x-auto">
+          <pre class="text-sm font-mono leading-loose"><code><span class="code-comment"># 创建并切换到新分支</span>
+git checkout -b feat/hsf-seo-audit-ui
+
+<span class="code-comment"># 查看改了哪些文件</span>
+git status
+
+<span class="code-comment"># 提交所有改动</span>
+git add . &amp;&amp; git commit -m <span class="code-string">"feat: seo audit page UI"</span>
+
+<span class="code-comment"># 推送到远程</span>
+git push origin feat/hsf-seo-audit-ui</code></pre>
+        </div>
+        <p class="text-xs text-apple-text3 mt-3 flex items-center gap-1.5"><i data-lucide="lightbulb" class="w-3 h-3 text-apple-blue"></i> 不熟悉 Git？直接让 AI 帮你执行命令，说"帮我把代码推送到新分支 feat/xxx"即可。</p>
+      </div>
+    </div>
+
+    <!-- 3-3 -->
+    <div id="step-3-3" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="file-check" class="w-4 h-4 text-apple-blue"></i>
+        3-3 撰写交付文档
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">写清楚 PR 描述，让开发知道你交了什么、他要做什么：</p>
+      <div class="code-block p-5 overflow-x-auto">
+        <pre class="text-sm font-mono leading-relaxed"><code><span class="code-keyword">## 本次交付内容</span>
+- 实现了 <span class="code-string">[页面/功能名]</span> 的静态 UI
+- 使用 Mock 数据，所有业务逻辑已用 TODO 标记
+
+<span class="code-keyword">## 需要开发补充的内容</span>
+- [ ] src/pages/UserList.tsx 第 23 行：接入用户列表接口
+- [ ] src/components/UserFilter.tsx 第 45 行：接入筛选接口
+- [ ] 分页逻辑（当前为 Mock 分页）
+
+<span class="code-keyword">## 设计稿链接</span>
+<span class="code-string">[Figma 链接]</span>
+
+<span class="code-keyword">## 预览截图</span>
+<span class="code-string">[截图]</span></code></pre>
+      </div>
+    </div>
+
+    <!-- 3-4 -->
+    <div id="step-3-4" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="handshake" class="w-4 h-4 text-apple-blue"></i>
+        3-4 和开发建立信任
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">设计师交付代码初期，开发可能持观望态度。关键是<strong class="text-apple-text font-medium">用交付质量说话</strong>：</p>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="apple-card p-4 text-sm">
+          <div class="font-semibold text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="target" class="w-3.5 h-3.5 text-apple-blue"></i> 交付边界清晰</div>
+          <p class="text-apple-text3 text-xs leading-relaxed">只做 UI 层，业务逻辑全部用 TODO 标注，不越界、不增加开发负担</p>
+        </div>
+        <div class="apple-card p-4 text-sm">
+          <div class="font-semibold text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="file-text" class="w-3.5 h-3.5 text-apple-purple"></i> 文档先行</div>
+          <p class="text-apple-text3 text-xs leading-relaxed">每次交付附带清晰的对接文档，降低开发理解成本</p>
+        </div>
+        <div class="apple-card p-4 text-sm">
+          <div class="font-semibold text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="message-circle" class="w-3.5 h-3.5 text-apple-green"></i> 主动沟通</div>
+          <p class="text-apple-text3 text-xs leading-relaxed">上线前主动拉开发 Review，接受反馈并快速迭代</p>
+        </div>
+        <div class="apple-card p-4 text-sm">
+          <div class="font-semibold text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-apple-orange"></i> 持续证明</div>
+          <p class="text-apple-text3 text-xs leading-relaxed">前几次交付做到"零返工"，信任自然建立</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROMPT TEMPLATES ==================== -->
+<section id="prompts" class="mb-24 scroll-mt-20">
+  <div class="mb-10">
+    <p class="phase-badge text-apple-text3 uppercase tracking-widest mb-2">Prompt Templates</p>
+    <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">Prompt 模板库</h2>
+    <p class="text-sm text-apple-text2 mt-2">直接复制使用，<code class="px-1.5 py-0.5 rounded-md bg-apple-surface text-apple-text text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">[方括号]</code> 内容替换为你的实际信息</p>
+  </div>
+
+  <div class="prompt-masonry">
+    <!-- 通用开场 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(0,113,227,0.08);"><i data-lucide="rocket" class="w-3.5 h-3.5 text-apple-blue"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">通用开场</h4>
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">每次必用</span>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-sm font-mono leading-relaxed">
+        <code>我是一个 UI/UX 设计师，正在用 Cursor 辅助前端开发。<br>请先阅读根目录的 CLAUDE.md，了解项目技术栈和规范。<br><br>我们现在要开发 <span class="code-string">[功能名称]</span>。<br><br>开发约束：<br>- 所有数据使用 Mock，<span class="code-keyword">不调用任何真实 API</span><br>- 业务逻辑用 <span class="code-keyword">TODO 注释</span>占位，说明需要对接什么<br>- 只改动 <span class="code-string">[涉及的目录/文件]</span>，不要动其他文件<br><br><span class="code-keyword">协作方式：</span>请先看看我的描述，是否还有需要补充的？如果有请追问我；如没有请直接继续。</code>
+      </div>
+    </div>
+
+    <!-- 组件开发 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(175,82,222,0.08);"><i data-lucide="puzzle" class="w-3.5 h-3.5 text-apple-purple"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">组件开发</h4>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-sm font-mono leading-relaxed">
+        <code>帮我实现 <span class="code-string">[组件名]</span> 组件。设计稿截图见附图。<br><br>视觉要求：<span class="code-string">[关键样式，如卡片圆角 12px、主色 #5B4CDB]</span><br>交互要求：<span class="code-string">[hover 效果、点击展开、加载态等]</span><br>需要的状态：<span class="code-string">[空状态 / 加载中 / 正常 / 错误]</span><br><br>数据：使用 src/mock/<span class="code-string">[文件名]</span>.ts 中的 Mock 数据<br>约束：不调用真实 API，业务逻辑用 TODO 占位</code>
+      </div>
+    </div>
+
+    <!-- 问题修复 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(255,59,48,0.08);"><i data-lucide="wrench" class="w-3.5 h-3.5 text-apple-red"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">问题修复</h4>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-xs font-mono leading-relaxed">
+        <code><span class="code-string">[组件名/文件路径]</span> 出现了问题。<br><br>当前现象：<span class="code-string">[描述你看到的表现]</span><br>预期效果：<span class="code-string">[描述正确应该是什么样]</span><br>报错信息：<span class="code-string">[如有报错，完整粘贴到这里]</span><br><br>请只修改相关文件，<span class="code-keyword">不要改动其他组件和页面</span>。<br>修复后告诉我改了哪里、为什么。</code>
+      </div>
+    </div>
+
+    <!-- 代码解释 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(52,199,89,0.08);"><i data-lucide="book-open" class="w-3.5 h-3.5 text-apple-green"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">代码解释</h4>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-xs font-mono leading-relaxed">
+        <code>请用简单易懂的语言解释这段代码在做什么，<br>重点说明：这个逻辑对 UI 表现有什么影响？<br><br><span class="code-string">[粘贴代码]</span></code>
+      </div>
+    </div>
+
+    <!-- 设计稿还原对比 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(0,113,227,0.08);"><i data-lucide="scan-eye" class="w-3.5 h-3.5 text-apple-blue"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">设计稿还原对比</h4>
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">高频</span>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-xs font-mono leading-relaxed">
+        <code>这是设计稿截图（见附图），这是当前页面效果。<br>请逐一对比以下差异并修复：<br><br><span class="code-type">1.</span> 间距和尺寸是否与设计稿一致<br><span class="code-type">2.</span> 字号、字重、颜色是否匹配<br><span class="code-type">3.</span> 圆角、阴影、边框等细节<br><span class="code-type">4.</span> 元素对齐方式<br><br>修复后列出所有改动点。</code>
+      </div>
+    </div>
+
+    <!-- 响应式适配 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(175,82,222,0.08);"><i data-lucide="smartphone" class="w-3.5 h-3.5 text-apple-purple"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">响应式适配</h4>
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">高频</span>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-xs font-mono leading-relaxed">
+        <code><span class="code-string">[页面/组件名]</span> 目前只适配了桌面端。<br>请添加移动端适配（断点：<span class="code-string">[768px / 1024px]</span>）：<br><br><span class="code-type">1.</span> <span class="code-string">[描述移动端布局，如：侧边栏改为底部 Tab]</span><br><span class="code-type">2.</span> 表格在小屏改为卡片列表<br><span class="code-type">3.</span> 保持功能不变，只调整布局和字号<br><br>改完后帮我在 375px 和 768px 两个宽度下检查一遍。</code>
+      </div>
+    </div>
+
+    <!-- 交付对接文档生成 -->
+    <div class="prompt-card prompt-item p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(255,149,0,0.08);"><i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-apple-orange"></i></div>
+        <h4 class="font-semibold text-apple-text text-sm">交付对接文档生成</h4>
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">交付必备</span>
+      </div>
+      <div class="code-block rounded-lg p-3.5 text-xs font-mono leading-relaxed">
+        <code>我已经完成了 <span class="code-string">[页面/功能名]</span> 的静态 UI 开发，现在需要生成一份交付对接文档给开发。<br><br>请帮我梳理并输出以下内容：<br><br><span class="code-type">1.</span> 本次交付的页面/组件清单（列出所有新增和修改的文件）<br><span class="code-type">2.</span> 所有 TODO 占位点汇总（文件路径 + 行号 + 需要对接的接口/逻辑）<br><span class="code-type">3.</span> Mock 数据与真实接口的替换对照表<br><span class="code-type">4.</span> 需要开发注意的特殊逻辑或边界情况<br><span class="code-type">5.</span> 预览截图说明（哪些页面/状态需要开发重点验证）<br><br>输出格式：Markdown，可直接粘贴到 PR 描述中。</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== INTERNAL ROLLOUT ==================== -->
+<section id="rollout" class="mb-24 scroll-mt-20">
+  <div class="mb-10">
+    <p class="phase-badge text-apple-text3 uppercase tracking-widest mb-2">Internal Rollout</p>
+    <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">公司内部推进节奏</h2>
+    <p class="text-sm text-apple-text2 mt-2">在公司内推进前，先明确自己的角色目标：</p>
+  </div>
+
+  <!-- 两种模式 -->
+  <div class="grid md:grid-cols-2 gap-4 mb-8">
+    <div class="apple-card p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">模式 A</span>
+        <h3 class="font-semibold text-apple-text text-sm">协作型</h3>
+        <span class="phase-badge text-apple-green px-2 py-0.5 rounded-full" style="background:rgba(52,199,89,0.08);">推荐起步</span>
+      </div>
+      <p class="text-sm text-apple-text2 leading-relaxed mb-3">设计稿 → 生成前端代码 → 交开发 Review / 集成</p>
+      <div class="flex items-center gap-1.5 text-xs text-apple-text3">
+        <i data-lucide="gauge" class="w-3 h-3 text-apple-green"></i>
+        <span>难度低，适合起步</span>
+      </div>
+    </div>
+    <div class="apple-card p-6">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="phase-badge text-apple-blue px-2 py-0.5 rounded-full" style="background:rgba(0,113,227,0.06);">模式 B</span>
+        <h3 class="font-semibold text-apple-text text-sm">承接型</h3>
+      </div>
+      <p class="text-sm text-apple-text2 leading-relaxed mb-3">直接负责某些页面 / 功能的完整前端交付</p>
+      <div class="flex items-center gap-1.5 text-xs text-apple-text3">
+        <i data-lucide="gauge" class="w-3 h-3 text-apple-orange"></i>
+        <span>难度高，需建立信任后推进</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="golden-rule px-6 py-4 flex items-start gap-4 mb-12">
+    <i data-lucide="lightbulb" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+    <div>
+      <p class="text-amber-800 text-sm leading-relaxed"><strong class="text-amber-900">建议：先做 A，用成果换信任，再逐步扩展到 B。</strong></p>
+    </div>
+  </div>
+
+  <div class="space-y-12">
+    <!-- 推进第一步 -->
+    <div id="rollout-1" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="flask-conical" class="w-4 h-4 text-apple-blue"></i>
+        找低风险试验项目
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">目标是拿出一个<strong class="text-apple-text font-medium">"能跑、能看、能交付"</strong>的成果：</p>
+      <div class="space-y-2">
+        <div class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm" style="border:1px solid rgba(0,0,0,0.04);">
+          <i data-lucide="check" class="w-3.5 h-3.5 text-apple-green mt-0.5 flex-shrink-0"></i>
+          <span class="text-apple-text">选<strong>内部工具、活动页、非核心业务页面</strong>作为试验田</span>
+        </div>
+        <div class="flex items-start gap-3 p-3.5 rounded-xl bg-apple-surface2 text-sm" style="border:1px solid rgba(0,0,0,0.04);">
+          <i data-lucide="x" class="w-3.5 h-3.5 text-apple-text4 mt-0.5 flex-shrink-0"></i>
+          <span class="text-apple-text">不要上来就碰主产品线</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 推进第二步 -->
+    <div id="rollout-2" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="users" class="w-4 h-4 text-apple-blue"></i>
+        和一个开发建立盟友关系
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">不绕过开发，而是<strong class="text-apple-text font-medium">拉他一起</strong>——这比说服整个团队容易得多：</p>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="apple-card p-4 text-sm">
+          <div class="font-medium text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="user-check" class="w-3.5 h-3.5 text-apple-blue"></i> 他的收益</div>
+          <p class="text-apple-text3 text-xs leading-relaxed">省了写 UI 代码的时间，只需 Review 和集成</p>
+        </div>
+        <div class="apple-card p-4 text-sm">
+          <div class="font-medium text-apple-text mb-1 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-apple-green"></i> 你的收益</div>
+          <p class="text-apple-text3 text-xs leading-relaxed">获得技术背书，后续推进更容易</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 推进第三步 -->
+    <div id="rollout-3" class="scroll-mt-20 pl-6 step-line">
+      <h3 class="text-base font-semibold text-apple-text mb-2 flex items-center gap-2">
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-apple-blue"></i>
+        量化价值
+      </h3>
+      <p class="text-sm text-apple-text2 mb-4">数据比 PPT 有说服力。记录时间对比：</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="apple-card p-5 text-center">
+          <div class="text-xs text-apple-text3 mb-1">以前</div>
+          <div class="text-2xl font-bold text-apple-text">~2 周</div>
+          <div class="text-xs text-apple-text3 mt-1">设计稿 → 排期 → 开发写 UI</div>
+        </div>
+        <div class="apple-card p-5 text-center">
+          <div class="text-xs text-apple-text3 mb-1">现在</div>
+          <div class="text-2xl font-bold text-apple-blue">~3 天</div>
+          <div class="text-xs text-apple-text3 mt-1">设计师直接出可用的 UI 代码</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FAQ ==================== -->
+<section id="faq" class="mb-24 scroll-mt-20">
+  <div class="mb-10">
+    <p class="phase-badge text-apple-text3 uppercase tracking-widest mb-2">FAQ</p>
+    <h2 class="text-3xl font-bold text-apple-text" style="letter-spacing:-0.02em;">常见问题</h2>
+  </div>
+
+  <div class="space-y-3">
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">AI 生成的代码报错了怎么办？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        把报错信息<strong class="text-apple-text font-medium">完整复制</strong>给 AI，说"帮我修复这个报错"，不要自己猜。AI 通常能根据报错信息精准定位问题。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">AI 改了我不让它改的文件怎么办？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        在 CLAUDE.md 中明确写"禁止修改 xxx 文件"，并在每次对话开始时提醒。用 Git 可以随时回退误改的文件。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">生成的 UI 和设计稿差很多怎么办？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        截图对比，告诉 AI"这是设计稿截图，这是当前效果，请调整以下部分：..."。视觉对比比文字描述更高效。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">如何让 AI 产出符合产品风格的 UI？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        <p class="mb-3">核心思路：<strong class="text-apple-text font-medium">把"产品风格"变成 AI 能读懂的结构化规则</strong>，而不是靠每次 Prompt 描述。在 <code class="px-1 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">CLAUDE.md</code> 或 <code class="px-1 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">.cursor/rules/</code> 里写死四件事：</p>
+        <div class="space-y-2.5">
+          <div class="flex items-start gap-2.5 p-3.5 rounded-xl bg-white" style="border:1px solid rgba(0,0,0,0.04);">
+            <span class="w-6 h-6 rounded-lg flex items-center justify-center text-apple-blue text-xs font-bold font-mono flex-shrink-0 mt-0.5" style="background:rgba(0,113,227,0.08);">1</span>
+            <div>
+              <p class="font-medium text-apple-text mb-1">对齐 AI 审美</p>
+              <p class="text-apple-text2 text-xs">用一段话描述产品调性 + 参考产品，例如「类似 Linear 的紧凑感」「接近 Notion 的留白」。审美氛围词一写清楚，AI 的默认风格会立刻靠近你的产品。</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5 p-3.5 rounded-xl bg-white" style="border:1px solid rgba(0,0,0,0.04);">
+            <span class="w-6 h-6 rounded-lg flex items-center justify-center text-apple-blue text-xs font-bold font-mono flex-shrink-0 mt-0.5" style="background:rgba(0,113,227,0.08);">2</span>
+            <div>
+              <p class="font-medium text-apple-text mb-1">锁死 Design Token</p>
+              <p class="text-apple-text2 text-xs">明确规定：颜色、间距、字号<strong class="text-apple-text font-medium">只能用 Design Token（CSS 变量 / 主题变量）</strong>，不准写魔法数字和裸色值。避免 AI 自己"调色"偏离品牌。</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5 p-3.5 rounded-xl bg-white" style="border:1px solid rgba(0,0,0,0.04);">
+            <span class="w-6 h-6 rounded-lg flex items-center justify-center text-apple-blue text-xs font-bold font-mono flex-shrink-0 mt-0.5" style="background:rgba(0,113,227,0.08);">3</span>
+            <div>
+              <p class="font-medium text-apple-text mb-1">强制复用组件库</p>
+              <p class="text-apple-text2 text-xs">下死命令「<strong class="text-apple-text font-medium">不允许引入新的 UI 库，必须用项目现有的 xxx</strong>（如 shadcn/ui、Ant Design、自研组件库）」。新增组件前先检索，杜绝重复造轮子。</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2.5 p-3.5 rounded-xl bg-white" style="border:1px solid rgba(0,0,0,0.04);">
+            <span class="w-6 h-6 rounded-lg flex items-center justify-center text-apple-blue text-xs font-bold font-mono flex-shrink-0 mt-0.5" style="background:rgba(0,113,227,0.08);">4</span>
+            <div>
+              <p class="font-medium text-apple-text mb-1">限制写法边界</p>
+              <p class="text-apple-text2 text-xs"><strong class="text-apple-text font-medium">不允许写内联 style，除非是动态计算的值</strong>。样式统一走 Tailwind / CSS Module / 主题系统，保证项目整体风格可维护、可追溯。</p>
+            </div>
+          </div>
+        </div>
+        <p class="mt-3 text-xs text-apple-text3">一句话总结：<strong class="text-apple-text font-medium">Prompt 里强约束，规则里定边界。</strong>能给 AI 一个「沙盒」，就不要给它一张「白纸」。</p>
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">对话太长 AI 开始乱改怎么办？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        开一个新对话，把 CLAUDE.md 内容和当前进度重新告知 AI，继续工作。长对话是 AI 质量下降的主要原因。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">不知道一个功能该怎么实现怎么办？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        先问 AI"这个功能有哪些实现方式，各有什么优缺点"，选一个再让它实现。不要自己猜，让 AI 做技术选型。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">担心代码质量不够好，开发不接受怎么办？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        记住你交付的是<strong class="text-apple-text font-medium">静态 UI 层</strong>，不涉及架构决策。只要做到：① 文件结构和命名遵守项目规范；② 所有业务逻辑用 TODO 标注；③ 附带清晰的对接文档 — 开发接手成本极低。前 1-2 次交付主动邀请开发 Review，根据反馈调整，信任很快就会建立起来。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">完全不懂 Git，能做 Vibe Coding 吗？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        可以。日常只需要 4 个命令：<code class="px-1 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">checkout -b</code>（建分支）、<code class="px-1 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">status</code>（看状态）、<code class="px-1 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">add + commit</code>（提交）、<code class="px-1 py-0.5 rounded-md bg-apple-surface text-xs font-mono" style="border:1px solid rgba(0,0,0,0.06);">push</code>（推送）。不确定的时候直接告诉 AI"帮我把代码提交并推送到远程"，它会帮你执行。
+      </div>
+    </details>
+
+    <details class="group rounded-2xl bg-apple-surface2 overflow-hidden" style="border:1px solid rgba(0,0,0,0.04);">
+      <summary class="flex items-center justify-between p-5 cursor-pointer hover:bg-black/[0.02] transition-colors">
+        <span class="font-medium text-apple-text text-sm">公司内部推进时常见坑有哪些？怎么应对？</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-apple-text4 group-open:rotate-180 transition-transform duration-200"></i>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-apple-text2 leading-relaxed" style="line-height:1.65;">
+        <div class="space-y-2">
+          <p><strong class="text-apple-text font-medium">代码质量被开发否定：</strong>主动说"这是初稿，帮我看哪里需要改"，而不是"这是我写的代码"。</p>
+          <p><strong class="text-apple-text font-medium">开发觉得你越权：</strong>强调"减少重复劳动"，而不是"替代你"。</p>
+          <p><strong class="text-apple-text font-medium">承接后出 bug 背锅：</strong>提前和 PM / 开发约定好交付物的验收标准。</p>
+          <p><strong class="text-apple-text font-medium">AI 遗忘早期约定：</strong>关键约束写进 CLAUDE.md 文件，不只在对话里说。</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer class="ml-0 md:ml-56 py-12" style="border-top:1px solid rgba(0,0,0,0.06);">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <p class="text-xs text-apple-text3 leading-relaxed">
+      设计师不需要学会写代码，而是学会指挥 AI 写代码
+    </p>
+    <a href="#hero" class="text-xs text-apple-text3 hover:text-apple-blue transition-colors flex items-center gap-1 shrink-0">
+      <i data-lucide="arrow-up" class="w-3 h-3"></i> 回到顶部
+    </a>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<button id="back-to-top" class="back-to-top-btn" aria-label="返回顶部" title="返回顶部">
+  <i data-lucide="arrow-up" class="w-4 h-4"></i>
+</button>
+
+<script>
+// Initialize Lucide icons
+lucide.createIcons();
+
+// Back to top button
+const backBtn = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => {
+  backBtn.classList.toggle('show', window.scrollY > 400);
+});
+backBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Sidebar active state
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+const sectionTargets = [];
+sidebarLinks.forEach(link => {
+  const href = link.getAttribute('href');
+  if (href && href.startsWith('#')) {
+    const el = document.querySelector(href);
+    if (el) sectionTargets.push({ el, link });
+  }
+});
+
+function updateActive() {
+  let current = null;
+  for (const s of sectionTargets) {
+    const rect = s.el.getBoundingClientRect();
+    if (rect.top <= 120) current = s;
+  }
+  sidebarLinks.forEach(l => l.classList.remove('active'));
+  if (current) current.link.classList.add('active');
+}
+window.addEventListener('scroll', updateActive);
+updateActive();
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
