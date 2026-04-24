@@ -255,19 +255,23 @@
     }
     #safari-overlay.visible { display: block; }
     #safari-window {
-      position: absolute; top: 8px; left: 50%; transform: translateX(-50%) scale(0.95);
-      width: 90%; max-width: 1100px;
-      height: calc(100% - 16px);
+      position: absolute; inset: 0;
       display: flex; flex-direction: column;
-      border-radius: 10px;
+      border-radius: 0;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.3);
+      box-shadow: none;
       opacity: 0;
       pointer-events: auto;
-      transition: transform .28s cubic-bezier(0.16,1,0.3,1), opacity .22s ease;
+      transition: all .3s cubic-bezier(0.16,1,0.3,1);
     }
-    #safari-overlay.visible #safari-window { transform: translateX(-50%) scale(1); opacity: 1; }
-    #safari-overlay.closing #safari-window { transform: translateX(-50%) scale(0.95); opacity: 0; }
+    #safari-overlay.visible #safari-window { opacity: 1; }
+    #safari-overlay.closing #safari-window { opacity: 0; transform: scale(0.95); }
+    /* Windowed mode */
+    #safari-window.windowed {
+      inset: 8px;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.3);
+    }
 
     .safari-toolbar {
       height: 52px;
@@ -290,6 +294,8 @@
     .traffic-lights:hover .tl-close::after { content: '×'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: rgba(80,0,0,0.6); }
     .traffic-lights:hover .tl-min::after { content: '−'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: rgba(80,50,0,0.5); line-height: 1; }
     .traffic-lights:hover .tl-max::after { content: ''; position: absolute; inset: 3px; border: 1.5px solid rgba(0,60,0,0.5); border-radius: 1px; }
+    /* Fullscreen green button shows diagonal arrows */
+    .traffic-lights:hover .tl-max.is-fullscreen::after { content: ''; position: absolute; inset: 2px; border: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M0 6L6 0M2 0H0v2M8 6V8H6' stroke='rgba(0,60,0,0.6)' stroke-width='1.2' fill='none'/%3E%3C/svg%3E") center/6px no-repeat; border-radius: 1px; }
 
     .safari-nav { display: flex; gap: 4px; flex-shrink: 0; }
     .safari-nav-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 5px; color: rgba(255,255,255,0.3); }
@@ -420,10 +426,20 @@
       display: flex; flex-direction: column;
       overflow: hidden;
       opacity: 0;
-      transition: transform .25s cubic-bezier(0.16,1,0.3,1), opacity .2s ease;
+      transition: all .3s cubic-bezier(0.16,1,0.3,1);
+    }
+    #finder-window.fullscreen {
+      top: 0; left: 0; transform: none;
+      width: 100%; height: 100%;
+      max-height: none;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
     }
     #finder-overlay.visible #finder-window { transform: translateX(-50%) scale(1); opacity: 1; }
+    #finder-overlay.visible #finder-window.fullscreen { transform: none; }
     #finder-overlay.closing #finder-window { transform: translateX(-50%) scale(0.95); opacity: 0; }
+    #finder-overlay.closing #finder-window.fullscreen { transform: scale(0.95); }
     .finder-toolbar {
       height: 52px;
       background: rgba(48,48,50,0.6);
@@ -650,8 +666,8 @@
       <div class="safari-toolbar">
         <div class="traffic-lights">
           <div class="tl tl-close" onclick="closeSafari()"></div>
-          <div class="tl tl-min" onclick="closeSafari()"></div>
-          <div class="tl tl-max"></div>
+          <div class="tl tl-min" onclick="minimizeSafari()"></div>
+          <div class="tl tl-max" onclick="toggleSafariFullscreen()"></div>
         </div>
         <div class="safari-nav">
           <div class="safari-nav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div>
@@ -675,8 +691,8 @@
       <div class="finder-toolbar">
         <div class="traffic-lights">
           <div class="tl tl-close" onclick="closeFinder()"></div>
-          <div class="tl tl-min" onclick="closeFinder()"></div>
-          <div class="tl tl-max"></div>
+          <div class="tl tl-min" onclick="minimizeFinder()"></div>
+          <div class="tl tl-max" onclick="toggleFinderFullscreen()"></div>
         </div>
         <div style="display:flex;align-items:center;gap:6px;margin-left:8px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -958,7 +974,21 @@ function closeSafari(){
   ov.classList.add('closing');
   if(curApp) document.querySelectorAll('.dock-item[data-app="'+curApp+'"]').forEach(e=>e.classList.remove('running'));
   setTimeout(()=>{ov.classList.remove('visible','closing');document.getElementById('safari-content').innerHTML='';
+    document.getElementById('safari-window').classList.remove('windowed');
+    document.querySelector('#safari-window .tl-max').classList.remove('is-fullscreen');
     document.getElementById('menu-app-name').childNodes[0].textContent='Finder';curApp=null;},280);
+}
+
+function minimizeSafari(){
+  // Minimize = close with a scale-down animation (simulated)
+  closeSafari();
+}
+
+function toggleSafariFullscreen(){
+  const win=document.getElementById('safari-window');
+  const btn=win.querySelector('.tl-max');
+  win.classList.toggle('windowed');
+  btn.classList.toggle('is-fullscreen');
 }
 
 function openApp(el){
@@ -1004,9 +1034,23 @@ function openFinder(){
   ov.classList.remove('closing');ov.classList.add('visible');
 }
 function closeFinder(){
-  const ov=document.getElementById('finder-overlay');
-  ov.classList.add('closing');
-  setTimeout(()=>{ov.classList.remove('visible','closing');finderOpen=false;},260);
+const ov=document.getElementById('finder-overlay');
+ov.classList.add('closing');
+setTimeout(()=>{ov.classList.remove('visible','closing');finderOpen=false;
+  document.getElementById('finder-window').classList.remove('fullscreen');
+  document.querySelector('#finder-window .tl-max').classList.remove('is-fullscreen');
+},260);
+}
+
+function minimizeFinder(){
+  closeFinder();
+}
+
+function toggleFinderFullscreen(){
+  const win=document.getElementById('finder-window');
+  const btn=win.querySelector('.tl-max');
+  win.classList.toggle('fullscreen');
+  btn.classList.toggle('is-fullscreen');
 }
 function finderNav(el,name){
   document.querySelectorAll('.finder-sb-item').forEach(i=>i.classList.remove('selected'));
