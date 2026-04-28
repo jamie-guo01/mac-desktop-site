@@ -440,6 +440,10 @@
     #finder-overlay.visible #finder-window.fullscreen { transform: none; }
     #finder-overlay.closing #finder-window { transform: translateX(-50%) scale(0.95); opacity: 0; }
     #finder-overlay.closing #finder-window.fullscreen { transform: scale(0.95); }
+
+    /* Finder plugin item dblclick */
+    .finder-file.plugin-item { cursor: default; }
+    .finder-file.plugin-item:active { background: rgba(10,132,255,0.25); }
     .finder-toolbar {
       height: 52px;
       background: rgba(48,48,50,0.6);
@@ -666,6 +670,23 @@
       </div>
       <span class="icon-label">设计规范</span>
     </div>
+
+    <!-- 设计工具箱 (Folder) -->
+    <div class="desktop-icon" data-folder="design-toolbox" ondblclick="openToolboxFolder()">
+      <div class="icon-img">
+        <svg width="64" height="64" viewBox="0 0 120 120">
+          <defs><linearGradient id="g-toolbox" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient></defs>
+          <path d="M10 38c0-4 3-7 7-7h26l8 10h52c4 0 7 3 7 7v48c0 4-3 7-7 7H17c-4 0-7-3-7-7V38z" fill="url(#g-toolbox)"/>
+          <path d="M10 48h100v42c0 4-3 7-7 7H17c-4 0-7-3-7-7V48z" fill="#93C5FD" opacity=".5"/>
+          <g transform="translate(36,56)">
+            <rect x="0" y="8" width="48" height="28" rx="4" fill="#fff" opacity=".9"/>
+            <rect x="14" y="0" width="20" height="12" rx="3" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/>
+            <rect x="20" y="18" width="8" height="8" rx="2" fill="#3B82F6" opacity=".8"/>
+          </g>
+        </svg>
+      </div>
+      <span class="icon-label">设计工具箱</span>
+    </div>
   </div>
 
   <!-- Safari Window -->
@@ -817,6 +838,19 @@
         <span class="dock-dot"></span>
       </div>
 
+      <!-- 设计工具箱 -->
+      <div class="dock-item" data-folder="design-toolbox" ondblclick="openToolboxFolder()">
+        <div class="dock-icon-wrap">
+          <svg width="48" height="48" viewBox="0 0 120 120">
+            <path d="M10 38c0-4 3-7 7-7h26l8 10h52c4 0 7 3 7 7v48c0 4-3 7-7 7H17c-4 0-7-3-7-7V38z" fill="url(#g-toolbox)"/>
+            <path d="M10 48h100v42c0 4-3 7-7 7H17c-4 0-7-3-7-7V48z" fill="#93C5FD" opacity=".5"/>
+            <g transform="translate(36,56)"><rect x="0" y="8" width="48" height="28" rx="4" fill="#fff" opacity=".9"/><rect x="14" y="0" width="20" height="12" rx="3" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/><rect x="20" y="18" width="8" height="8" rx="2" fill="#3B82F6" opacity=".8"/></g>
+          </svg>
+        </div>
+        <span class="tooltip">设计工具箱</span>
+        <span class="dock-dot"></span>
+      </div>
+
       <div class="dock-sep"></div>
 
       <!-- Trash -->
@@ -849,6 +883,10 @@
 <div class="lp-icon" data-app="design-standard" data-url="design-stand/" ondblclick="lpOpenApp(this)">
 <div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-ds2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFDD00"/><stop offset="100%" stop-color="#FF7700"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-ds2)"/><rect x="28" y="24" width="64" height="72" rx="6" fill="#fff" opacity=".95"/><rect x="36" y="36" width="28" height="3" rx="1.5" fill="#FF7700" opacity=".8"/><rect x="36" y="44" width="48" height="2" rx="1" fill="#333" opacity=".25"/><rect x="36" y="50" width="44" height="2" rx="1" fill="#333" opacity=".25"/><rect x="36" y="56" width="40" height="2" rx="1" fill="#333" opacity=".25"/><rect x="36" y="66" width="20" height="3" rx="1.5" fill="#FFDD00"/><rect x="36" y="74" width="48" height="2" rx="1" fill="#333" opacity=".25"/><rect x="36" y="80" width="36" height="2" rx="1" fill="#333" opacity=".25"/></svg></div>
 <span class="lp-icon-label">设计规范</span>
+</div>
+<div class="lp-icon" data-folder="design-toolbox" ondblclick="lpOpenToolbox(this)">
+<div class="lp-icon-img"><svg viewBox="0 0 120 120"><defs><linearGradient id="g-tb2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient></defs><rect width="120" height="120" rx="26" fill="url(#g-tb2)"/><path d="M20 50c0-3 2-5 5-5h20l6 8h39c3 0 5 2 5 5v30c0 3-2 5-5 5H25c-3 0-5-2-5-5V50z" fill="#93C5FD" opacity=".7"/><g transform="translate(38,58)"><rect x="0" y="6" width="40" height="24" rx="3" fill="#fff" opacity=".9"/><rect x="12" y="0" width="16" height="10" rx="2" fill="none" stroke="#fff" stroke-width="2.5" opacity=".9"/><rect x="16" y="14" width="8" height="8" rx="2" fill="#3B82F6" opacity=".8"/></g></svg></div>
+<span class="lp-icon-label">设计工具箱</span>
 </div>
 <div class="lp-icon">
       <div class="lp-icon-img"><img src="icons/safari.png"></div>
@@ -965,7 +1003,7 @@ function closeMenus(){
 document.addEventListener('click',()=>closeMenus());
 
 // === Apps ===
-const apps={'about-me':{name:'关于我'},'vibe-coding':{name:'Vibe Coding',url:'vibe-coding-guide.html'},'design-standard':{name:'设计规范',url:'design-stand/'}};
+const apps={'about-me':{name:'关于我'},'vibe-coding':{name:'Vibe Coding',url:'vibe-coding-guide.html'},'design-standard':{name:'设计规范',url:'design-stand/'},'plugin-text-on-path':{name:'路径文字',url:'_inline_'},'plugin-mosaic':{name:'图片马赛克',url:'_inline_'},'plugin-outline':{name:'PNG轮廓描边',url:'_inline_'}};
 let curApp=null;
 
 function aboutHTML(){
@@ -978,14 +1016,82 @@ function aboutHTML(){
     '</div></div>';
 }
 
+// === Plugin showcase HTML generators ===
+function pluginPageHTML(id){
+  const pages={
+    'plugin-text-on-path':{
+      name:'路径文字',
+      color:'#6366f1', bg:'linear-gradient(135deg,#EEF2FF,#E0E7FF)',
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+      desc:'让文字沿任意路径排列，支持曲线、圆形、矩形等各种路径。可调节起始偏移、垂直偏移、多行行距等参数，实时预览效果后一键生成到画布。',
+      features:['支持任意矢量路径','实时 SVG 预览','起始偏移 & 垂直偏移调节','多行文字 + 行距控制','一键生成独立文字图层'],
+      scene:'适用于徽章文字环绕、弧形标题、沿路径排列的装饰性文字等场景。'
+    },
+    'plugin-mosaic':{
+      name:'图片马赛克',
+      color:'#F59E0B', bg:'linear-gradient(135deg,#FFFBEB,#FEF3C7)',
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
+      desc:'为图片快速添加像素化马赛克效果，可自由调节马赛克块大小。选中图片图层后即可一键处理，直接替换原图层内容。',
+      features:['像素级马赛克处理','马赛克块大小可调','支持各种图片格式','一键替换原图层','处理速度快'],
+      scene:'适用于隐私保护、敏感信息遮挡、设计稿中的占位图处理等场景。'
+    },
+    'plugin-outline':{
+      name:'PNG轮廓描边',
+      color:'#22C55E', bg:'linear-gradient(135deg,#F0FDF4,#DCFCE7)',
+      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+      desc:'自动检测 PNG 图片的透明边界，沿轮廓生成精确描边效果。支持自定义描边颜色和粗细，为图标、贴纸等添加外轮廓。',
+      features:['自动检测 Alpha 轮廓','描边颜色自定义','描边粗细可调','支持复杂形状','输出为新图层'],
+      scene:'适用于贴纸描边、图标外发光、头像边框、表情包轮廓等场景。'
+    }
+  };
+  const p=pages[id]; if(!p) return '';
+  return '<div style="width:100%;height:100%;background:'+p.bg+';overflow-y:auto;font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,Inter,PingFang SC,sans-serif;">'+
+    '<div style="max-width:640px;margin:0 auto;padding:48px 32px 64px;">'+
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:32px;">'+
+        '<div style="width:56px;height:56px;border-radius:14px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;">'+
+          '<div style="width:28px;height:28px;">'+p.icon+'</div>'+
+        '</div>'+
+        '<div><div style="font-size:24px;font-weight:700;color:#18181B;letter-spacing:-.5px;">'+p.name+'</div>'+
+          '<div style="font-size:13px;color:#71717A;margin-top:2px;">MasterGo 插件 · 设计工具箱</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px;">'+
+        '<div style="font-size:15px;line-height:1.8;color:#3F3F46;">'+p.desc+'</div>'+
+      '</div>'+
+      '<div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px;">'+
+        '<div style="font-size:13px;font-weight:600;color:#18181B;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px;">功能特性</div>'+
+        p.features.map(function(f){return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F4F4F5;"><div style="width:6px;height:6px;border-radius:50%;background:'+p.color+';flex-shrink:0;"></div><span style="font-size:14px;color:#3F3F46;">'+f+'</span></div>';}).join('')+
+      '</div>'+
+      '<div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px;">'+
+        '<div style="font-size:13px;font-weight:600;color:#18181B;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">使用场景</div>'+
+        '<div style="font-size:14px;line-height:1.7;color:#52525B;">'+p.scene+'</div>'+
+      '</div>'+
+      '<div style="text-align:center;padding-top:12px;">'+
+        '<div style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:'+p.color+';color:#fff;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 14px '+p.color+'44;cursor:pointer;">在 MasterGo 中使用</div>'+
+        '<div style="font-size:12px;color:#A1A1AA;margin-top:12px;">由美团履约设计组出品</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
 function openSafari(appId){
   const app=apps[appId]; if(!app) return;
   curApp=appId;
+  // Close Finder if open (plugin was opened from Finder)
+  if(finderOpen) closeFinder();
   document.querySelectorAll('.dock-item[data-app="'+appId+'"]').forEach(e=>e.classList.add('running'));
   document.getElementById('menu-app-name').childNodes[0].textContent=app.name;
   const ct=document.getElementById('safari-content'), url=document.getElementById('safari-url');
-  if(app.url){ct.innerHTML='<iframe src="'+app.url+'"></iframe>';url.textContent=app.url;}
-  else{ct.innerHTML=aboutHTML();url.textContent='关于我 — Jamie';}
+  if(app.url==='_inline_'){
+    ct.innerHTML=pluginPageHTML(appId);
+    url.textContent='mastergo.com/plugin/'+appId.replace('plugin-','');
+  } else if(app.url){
+    ct.innerHTML='<iframe src="'+app.url+'"></iframe>';
+    url.textContent=app.url;
+  } else {
+    ct.innerHTML=aboutHTML();
+    url.textContent='关于我 — Jamie';
+  }
   const ov=document.getElementById('safari-overlay');
   ov.classList.remove('closing');ov.classList.add('visible');
 }
@@ -1060,6 +1166,7 @@ ov.classList.add('closing');
 setTimeout(()=>{ov.classList.remove('visible','closing');finderOpen=false;
   document.getElementById('finder-window').classList.remove('fullscreen');
   document.querySelector('#finder-window .tl-max').classList.remove('is-fullscreen');
+  document.querySelectorAll('.dock-item[data-folder="design-toolbox"]').forEach(e=>e.classList.remove('running'));
 },260);
 }
 
@@ -1088,6 +1195,36 @@ function finderNav(el,name){
     'MacBook Pro':'<div class="finder-file"><div class="finder-file-icon">💾</div><div class="finder-file-name">Macintosh HD</div></div>'
   };
   main.innerHTML=files[name]||'<div style="padding:40px;color:rgba(255,255,255,.3);font-size:13px;width:100%;text-align:center;">此文件夹为空</div>';
+}
+
+// === Design Toolbox Folder ===
+function openToolboxFolder(){
+  // Open Finder showing the toolbox plugins
+  if(finderOpen) closeFinder();
+  setTimeout(()=>{
+    finderOpen=true;
+    const ov=document.getElementById('finder-overlay');
+    // Update Finder title
+    document.getElementById('finder-title').textContent='设计工具箱';
+    // Deselect sidebar items
+    document.querySelectorAll('.finder-sb-item').forEach(i=>i.classList.remove('selected'));
+    // Show the three plugins as files
+    const main=document.getElementById('finder-main');
+    main.innerHTML=
+      '<div class="finder-file plugin-item" ondblclick="openSafari(\'plugin-text-on-path\')"><div class="finder-file-icon"><svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#EEF2FF"/><path d="M30 10a4 4 0 1 1 5.6 5.6L15 36l-7 2 2-7Z" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="finder-file-name">路径文字</div></div>'+
+      '<div class="finder-file plugin-item" ondblclick="openSafari(\'plugin-mosaic\')"><div class="finder-file-icon"><svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#FFFBEB"/><rect x="10" y="10" width="11" height="11" rx="2" fill="#F59E0B"/><rect x="27" y="10" width="11" height="11" rx="2" fill="#F59E0B" opacity=".6"/><rect x="10" y="27" width="11" height="11" rx="2" fill="#F59E0B" opacity=".6"/><rect x="27" y="27" width="11" height="11" rx="2" fill="#F59E0B"/></svg></div><div class="finder-file-name">图片马赛克</div></div>'+
+      '<div class="finder-file plugin-item" ondblclick="openSafari(\'plugin-outline\')"><div class="finder-file-icon"><svg width="40" height="40" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#F0FDF4"/><rect x="10" y="10" width="28" height="28" rx="4" fill="none" stroke="#22C55E" stroke-width="2.5"/><circle cx="17" cy="17" r="2.5" fill="#22C55E"/><path d="M38 30l-8-8L14 38" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="finder-file-name">PNG轮廓描边</div></div>';
+    // Update path bar
+    document.querySelector('.finder-path-bar').innerHTML='<span>Macintosh HD</span><span>›</span><span>Users</span><span>›</span><span>jamie</span><span>›</span><span>设计工具箱</span>';
+    // Mark dock running
+    document.querySelectorAll('.dock-item[data-folder="design-toolbox"]').forEach(e=>e.classList.add('running'));
+    ov.classList.remove('closing');ov.classList.add('visible');
+  }, finderOpen? 280 : 10);
+}
+
+function lpOpenToolbox(el){
+  closeLaunchpad({target:document.getElementById('launchpad-overlay'),currentTarget:document.getElementById('launchpad-overlay')});
+  setTimeout(()=>{openToolboxFolder();},320);
 }
 
 // Desktop selection
